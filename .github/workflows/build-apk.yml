@@ -21,7 +21,7 @@ jobs:
           npm install @capacitor/core @capacitor/cli @capacitor/android
           
       - name: Init Capacitor
-        run: npx cap init Brainory com.devbytes.brainory --web-dir=.
+        run: npx cap init Brainory com.devbytes.brainory --web-dir=www
         
       - name: Add Android platform
         run: npx cap add android
