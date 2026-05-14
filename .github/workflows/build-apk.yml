@@ -1,0 +1,42 @@
+name: Build Brainory APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          
+      - name: Install Capacitor
+        run: |
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          
+      - name: Init Capacitor
+        run: npx cap init Brainory com.devbytes.brainory --web-dir=.
+        
+      - name: Add Android platform
+        run: npx cap add android
+        
+      - name: Sync files
+        run: npx cap sync
+        
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+          
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: brainory-apk
+          path: android/app/build/outputs/apk/debug/*.apk
