@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Brainory - Onboarding</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: #f5f5f5;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .top-bar {
+    padding: 24px 24px 8px;
+    text-align: center;
+  }
+  .brand {
+    font-size: 18px; font-weight: 800;
+    color: #2A9D8F; letter-spacing: 3px;
+  }
+  .slides-wrapper {
+    flex: 1; overflow: hidden; position: relative;
+  }
+  .slides {
+    display: flex; height: 100%;
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .slide {
+    min-width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; padding: 20px 32px 0;
+  }
+  .illustration-wrap {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle at 50% 60%, #e8e0f8 0%, #f0f0f0 70%, transparent 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 32px;
+    font-size: 120px;
+  }
+  /* 3D-ish emoji illustrations */
+  .slide-title {
+    font-size: 26px; font-weight: 800;
+    color: #1a1a1a; text-align: center;
+    margin-bottom: 16px; line-height: 1.2;
+  }
+  .slide-desc {
+    font-size: 14px; color: #666;
+    text-align: center; line-height: 1.6;
+    max-width: 260px;
+  }
+  .bottom-area {
+    padding: 16px 32px 32px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .dots {
+    display: flex; justify-content: center; gap: 6px; align-items: center;
+  }
+  .dot {
+    height: 8px; width: 8px;
+    background: #ccc; border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  .dot.active {
+    background: #F5E642; width: 24px; border-radius: 4px;
+  }
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .btn-skip {
+    background: none; border: none;
+    font-size: 15px; color: #333;
+    cursor: pointer; padding: 8px 0;
+    font-weight: 500;
+  }
+  .btn-next {
+    width: 52px; height: 52px;
+    background: #F5E642; border: none;
+    border-radius: 50%; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #333;
+    box-shadow: 0 4px 12px rgba(245,230,66,0.4);
+    transition: transform 0.2s;
+  }
+  .btn-next:active { transform: scale(0.93); }
+  .btn-get-started {
+    background: #F5E642; border: none;
+    padding: 14px 28px; border-radius: 50px;
+    font-size: 15px; font-weight: 700;
+    color: #333; cursor: pointer;
+    box-shadow: 0 4px 12px rgba(245,230,66,0.4);
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top-bar">
+    <div class="brand">BRAINORY</div>
+  </div>
+  <div class="slides-wrapper">
+    <div class="slides" id="slidesTrack">
+      <!-- Slide 1 -->
+      <div class="slide">
+        <div class="illustration-wrap">🕯️</div>
+        <div class="slide-title">Track Every Study Minute</div>
+        <div class="slide-desc">Know exactly how much time you spend on each lesson.</div>
+      </div>
+      <!-- Slide 2 -->
+      <div class="slide">
+        <div class="illustration-wrap">📚</div>
+        <div class="slide-title">Organize All Lesons</div>
+        <div class="slide-desc">Add and manage all your courses in one place. No more forgetting what to study.</div>
+      </div>
+      <!-- Slide 3 -->
+      <div class="slide">
+        <div class="illustration-wrap">💻</div>
+        <div class="slide-title">Study Smarter, Not Harder</div>
+        <div class="slide-desc">Track your study time, organize subjects, and see your progress through charts. Used by the students.</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-area">
+    <div class="dots">
+      <div class="dot active" id="dot0"></div>
+      <div class="dot" id="dot1"></div>
+      <div class="dot" id="dot2"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn-skip" id="leftBtn" onclick="handleLeft()">Skip</button>
+      <button class="btn-next" id="nextBtn" onclick="handleNext()">›</button>
+    </div>
+  </div>
+</div>
+<script>
+  let current = 0;
+  const total = 3;
+  const track = document.getElementById('slidesTrack');
+  const leftBtn = document.getElementById('leftBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  function updateSlide() {
+    track.style.transform = `translateX(-${current * 100}%)`;
+    for (let i = 0; i < total; i++) {
+      const d = document.getElementById('dot' + i);
+      d.className = i === current ? 'dot active' : 'dot';
+    }
+    if (current === 0) {
+      leftBtn.textContent = 'Skip';
+      leftBtn.onclick = () => window.location.href = 'welcome_flash.html';
+    } else {
+      leftBtn.textContent = 'Back';
+      leftBtn.onclick = () => { current--; updateSlide(); };
+    }
+    if (current === total - 1) {
+      nextBtn.style.width = 'auto';
+      nextBtn.style.borderRadius = '50px';
+      nextBtn.style.padding = '14px 28px';
+      nextBtn.style.fontSize = '15px';
+      nextBtn.style.fontWeight = '700';
+      nextBtn.innerHTML = 'Get Started';
+      nextBtn.onclick = () => window.location.href = 'welcome_flash.html';
+    } else {
+      nextBtn.style.width = '52px';
+      nextBtn.style.borderRadius = '50%';
+      nextBtn.style.padding = '0';
+      nextBtn.style.fontSize = '20px';
+      nextBtn.style.fontWeight = 'normal';
+      nextBtn.innerHTML = '›';
+      nextBtn.onclick = handleNext;
+    }
+  }
+
+  function handleLeft() { window.location.href = 'welcome_flash.html'; }
+  function handleNext() { if (current < total - 1) { current++; updateSlide(); } }
+
+  updateSlide();
+</script>
+</body>
+</html>

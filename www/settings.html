@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Brainory - Settings</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: #eef2f5;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: #f8fafc;
+    display: flex; flex-direction: column;
+    border-radius: 44px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden; position: relative;
+  }
+  .drawer-overlay {
+    position: absolute; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    display: none; border-radius: 44px;
+  }
+  .drawer-overlay.open { display: block; }
+  .drawer {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 280px; background: #fff;
+    border-radius: 0 24px 24px 0;
+    padding: 48px 0 32px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+    display: flex; flex-direction: column;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    z-index: 101;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .drawer-avatar {
+    width: 48px; height: 48px; border-radius: 28px;
+    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: #fff;
+  }
+  .drawer-user-info { display: flex; flex-direction: column; }
+  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
+  .drawer-email { font-size: 12px; color: #64748b; }
+  .drawer-nav { flex: 1; padding: 16px 0; }
+  .drawer-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; cursor: pointer;
+    font-size: 14px; color: #334155; font-weight: 500;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
+  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
+  .drawer-logout {
+    margin: 16px 20px;
+    background: #fee2e2; border: none; border-radius: 40px;
+    padding: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: #dc2626;
+    transition: 0.2s;
+  }
+  .header-gradient {
+    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
+    padding: 28px 20px 50px;
+    position: relative;
+  }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .menu-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: #1a1a1a; padding: 4px;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .search-btn {
+    background: rgba(255,255,255,0.6); border: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+  }
+  .profile-pic {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff; font-weight: 700;
+    cursor: pointer;
+  }
+  .page-title {
+    font-size: 26px; font-weight: 800;
+    color: #1a1a2e; margin-top: 8px;
+    font-style: italic; font-family: Georgia, 'Times New Roman', serif;
+  }
+  /* SEARCH MODAL */
+  .search-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+  }
+  .search-modal.open { display: flex; }
+  .search-modal-content {
+    background: white; width: 320px; border-radius: 28px;
+    padding: 20px; max-height: 80vh; overflow-y: auto;
+    text-align: center;
+  }
+  .search-modal-content input {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 16px;
+  }
+  .search-result-item {
+    padding: 12px; border-bottom: 1px solid #f1f5f9;
+    text-align: left; font-size: 14px;
+  }
+  .btn-cancel {
+    background: #f1f5f9; border: none;
+    padding: 10px; border-radius: 40px; width: 100%;
+    font-weight: 600; cursor: pointer;
+  }
+  /* CONTENT */
+  .content {
+    flex: 1; overflow-y: auto; padding: 16px 16px 80px;
+    margin-top: -36px; position: relative; z-index: 2;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  .settings-group {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .settings-header {
+    padding: 14px 20px;
+    background: rgba(0,0,0,0.02);
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #64748b;
+    letter-spacing: 0.5px;
+  }
+  .setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .setting-item:last-child { border-bottom: none; }
+  .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #0f172a;
+  }
+  .setting-label i { width: 24px; color: #3b82f6; font-size: 18px; }
+  .switch {
+    position: relative; display: inline-block; width: 48px; height: 24px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1; transition: 0.3s; border-radius: 34px;
+  }
+  .slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px;
+    left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%;
+  }
+  input:checked + .slider { background-color: #3b82f6; }
+  input:checked + .slider:before { transform: translateX(24px); }
+  .select-style {
+    background: #f0f2f5; border: none; padding: 6px 12px;
+    border-radius: 30px; font-size: 14px; color: #1e293b;
+  }
+  .danger-btn {
+    background: #fee2e2; color: #dc2626; border: none;
+    border-radius: 40px; padding: 12px; font-weight: 600;
+    width: 100%; text-align: center; cursor: pointer; margin-top: 12px;
+  }
+  /* IN‑APP MODAL */
+  .modal-overlay {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+    border-radius: 44px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-content {
+    background: white; width: 280px; border-radius: 28px;
+    padding: 24px; text-align: center;
+  }
+  .modal-content p { margin-bottom: 20px; color: #1e293b; }
+  .modal-buttons { display: flex; gap: 12px; margin-top: 12px; }
+  .modal-buttons button {
+    flex: 1; padding: 10px; border-radius: 40px;
+    border: none; font-weight: 600; cursor: pointer;
+  }
+  .btn-confirm { background: #3b82f6; color: white; }
+  .btn-cancel { background: #f1f5f9; color: #334155; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
+    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-avatar" id="drawerAvatar">U</div>
+        <div class="drawer-user-info">
+          <span class="drawer-username" id="drawerUsername">User</span>
+          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
+        </div>
+      </div>
+      <nav class="drawer-nav">
+        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
+        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
+        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
+        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
+        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
+        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quiz</a>
+        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
+        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
+        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
+      </nav>
+      <button class="drawer-logout" id="drawerLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+      <input type="text" id="searchInput" placeholder="Search settings...">
+      <div id="searchResults" style="max-height: 250px; overflow-y: auto;"></div>
+      <button class="btn-cancel" onclick="closeSearch()">Close</button>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header-gradient">
+    <div class="top-bar">
+      <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+      <div class="header-right">
+        <button class="search-btn" id="searchButton"><i class="fas fa-search"></i></button>
+        <div class="profile-pic" id="profilePic" onclick="window.location.href='profile.html'">U</div>
+      </div>
+    </div>
+    <div class="page-title">Settings</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="settings-group">
+      <div class="settings-header">Preferences</div>
+      <!-- Dark mode removed -->
+      <div class="setting-item">
+        <div class="setting-label"><i class="fas fa-bell"></i> Push Notifications</div>
+        <label class="switch"><input type="checkbox" id="notifToggle" checked><span class="slider"></span></label>
+      </div>
+      <div class="setting-item">
+        <div class="setting-label"><i class="fas fa-font"></i> Font Size</div>
+        <select id="fontSizeSelect" class="select-style">
+          <option value="small">Small</option><option value="medium" selected>Medium</option><option value="large">Large</option>
+        </select>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-header">Data Management</div>
+      <div class="setting-item">
+        <div class="setting-label"><i class="fas fa-database"></i> Export Data</div>
+        <button id="exportBtn" style="background:#f0f2f5; border:none; padding:6px 16px; border-radius:30px; cursor:pointer;">Export</button>
+      </div>
+      <div class="setting-item">
+        <div class="setting-label"><i class="fas fa-trash-alt"></i> Clear All Data</div>
+        <button id="clearDataBtn" style="background:#fee2e2; color:#dc2626; border:none; padding:6px 16px; border-radius:30px; cursor:pointer;">Clear</button>
+      </div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-header">About</div>
+      <div class="setting-item">
+        <div class="setting-label"><i class="fas fa-info-circle"></i> App Version</div>
+        <span style="color:#64748b;">Brainory 1.0.0</span>
+      </div>
+      <div class="setting-item">
+        <div class="setting-label"><i class="fas fa-shield-alt"></i> Privacy Policy</div>
+        <button id="privacyBtn" style="background:none; border:none; color:#3b82f6; cursor:pointer;">View</button>
+      </div>
+    </div>
+    <button id="logoutSettingsBtn" class="danger-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+
+  <!-- In‑app modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content">
+      <p id="modalMessage">Are you sure?</p>
+      <div class="modal-buttons">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-confirm" id="modalConfirmBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const email = localStorage.getItem('brainory_currentUser');
+  if (!email) window.location.href = 'login.html';
+  const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
+  const user = users[email] || { username: email.split('@')[0], email };
+  const storageKey = 'brainory_' + email;
+
+  let settings = JSON.parse(localStorage.getItem('brainory_settings') || '{}');
+  document.getElementById('notifToggle').checked = settings.notifications !== false;
+  document.getElementById('fontSizeSelect').value = settings.fontSize || 'medium';
+
+  function saveSettings() {
+    settings.notifications = document.getElementById('notifToggle').checked;
+    settings.fontSize = document.getElementById('fontSizeSelect').value;
+    localStorage.setItem('brainory_settings', JSON.stringify(settings));
+    showModal('Settings saved!', null, true);
+  }
+  document.getElementById('notifToggle').addEventListener('change', saveSettings);
+  document.getElementById('fontSizeSelect').addEventListener('change', saveSettings);
+
+  let pendingAction = null;
+  function showModal(message, onConfirm, isInfo = false) {
+    document.getElementById('modalMessage').innerText = message;
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    if (isInfo) {
+      confirmBtn.innerText = 'OK';
+      confirmBtn.onclick = () => { closeModal(); confirmBtn.innerText = 'Confirm'; confirmBtn.onclick = () => { if (pendingAction) pendingAction(); pendingAction = null; }; };
+      document.getElementById('modalOverlay').classList.add('open');
+      return;
+    }
+    confirmBtn.innerText = 'Confirm';
+    pendingAction = onConfirm;
+    confirmBtn.onclick = () => {
+      if (pendingAction) pendingAction();
+      closeModal();
+      pendingAction = null;
+      confirmBtn.onclick = () => {};
+    };
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+  // Export data
+  document.getElementById('exportBtn').onclick = () => {
+    const allData = localStorage.getItem(storageKey);
+    const blob = new Blob([allData], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `brainory_backup_${new Date().toISOString()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showModal('Data exported successfully!', null, true);
+  };
+
+  // Clear all data
+  document.getElementById('clearDataBtn').onclick = () => {
+    showModal('Are you sure? This will delete all your notes, subjects, schedules, drawings, etc. This cannot be undone.', () => {
+      localStorage.removeItem(storageKey);
+      showModal('All data cleared. The app will restart.', () => {
+        window.location.href = 'login.html';
+      }, true);
+    });
+  };
+
+  document.getElementById('privacyBtn').onclick = () => {
+    showModal('Your data is stored locally on your device. No data is sent to any server.', null, true);
+  };
+
+  function logout() {
+    localStorage.removeItem('brainory_currentUser');
+    window.location.href = 'index.html';
+  }
+  document.getElementById('logoutSettingsBtn').onclick = () => showModal('Log out of Brainory?', logout);
+  document.getElementById('drawerLogoutBtn').onclick = () => showModal('Log out of Brainory?', logout);
+
+  // ---------- Search functionality ----------
+  function openSearch() {
+    document.getElementById('searchModal').classList.add('open');
+    document.getElementById('searchInput').focus();
+  }
+  function closeSearch() {
+    document.getElementById('searchModal').classList.remove('open');
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('searchInput').value = '';
+  }
+  document.getElementById('searchButton').onclick = openSearch;
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const resultsDiv = document.getElementById('searchResults');
+    if (!query) {
+      resultsDiv.innerHTML = '<div style="padding:10px;">Type to search settings...</div>';
+      return;
+    }
+    const settingsItems = [
+      { name: 'Push Notifications', group: 'Preferences' },
+      { name: 'Font Size', group: 'Preferences' },
+      { name: 'Export Data', group: 'Data Management' },
+      { name: 'Clear All Data', group: 'Data Management' },
+      { name: 'App Version', group: 'About' },
+      { name: 'Privacy Policy', group: 'About' },
+      { name: 'Logout', group: 'General' }
+    ];
+    const matches = settingsItems.filter(item => item.name.toLowerCase().includes(query));
+    if (matches.length === 0) {
+      resultsDiv.innerHTML = '<div style="padding:10px;">No matching settings found.</div>';
+    } else {
+      resultsDiv.innerHTML = matches.map(item => `
+        <div class="search-result-item">
+          <strong>${item.name}</strong><br>
+          <span style="font-size:12px; color:#666;">${item.group}</span>
+        </div>
+      `).join('');
+    }
+  });
+
+  // ---------- Drawer & user info ----------
+  const initial = (user.username || email).charAt(0).toUpperCase();
+  document.getElementById('drawerAvatar').innerHTML = initial;
+  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
+  document.getElementById('drawerEmail').innerHTML = email;
+  document.getElementById('profilePic').innerHTML = initial;
+
+  function openDrawer() {
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+  }
+  window.openDrawer = openDrawer;
+  window.closeDrawer = closeDrawer;
+  window.closeModal = closeModal;
+</script>
+</body>
+</html>

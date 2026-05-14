@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Brainory - Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: #eef2f5;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: #f8fafc;
+    display: flex; flex-direction: column;
+    border-radius: 44px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden; position: relative;
+  }
+  /* DRAWER */
+  .drawer-overlay {
+    position: absolute; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    display: none; border-radius: 44px;
+  }
+  .drawer-overlay.open { display: block; }
+  .drawer {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 280px; background: #fff;
+    border-radius: 0 24px 24px 0;
+    padding: 48px 0 32px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    display: flex; flex-direction: column;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    z-index: 101;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .drawer-avatar {
+    width: 48px; height: 48px; border-radius: 28px;
+    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: #fff;
+  }
+  .drawer-user-info { display: flex; flex-direction: column; }
+  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
+  .drawer-email { font-size: 12px; color: #64748b; }
+  .drawer-nav { flex: 1; padding: 16px 0; }
+  .drawer-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; cursor: pointer;
+    font-size: 14px; color: #334155; font-weight: 500;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
+  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
+  .drawer-logout {
+    margin: 16px 20px;
+    background: #fee2e2; border: none; border-radius: 40px;
+    padding: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: #dc2626;
+    transition: 0.2s;
+  }
+
+  /* Search modal */
+  .search-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+  }
+  .search-modal.open { display: flex; }
+  .search-modal-content {
+    background: white; width: 320px; border-radius: 28px;
+    padding: 20px; max-height: 80vh; overflow-y: auto;
+    text-align: center;
+  }
+  .search-modal-content input {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 16px;
+  }
+  .search-result-item {
+    padding: 12px; border-bottom: 1px solid #f1f5f9;
+    text-align: left; font-size: 14px;
+  }
+  .btn-cancel {
+    background: #f1f5f9; border: none;
+    padding: 10px; border-radius: 40px; width: 100%;
+    font-weight: 600; cursor: pointer;
+  }
+
+  .header-gradient {
+    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
+    padding: 24px 20px 80px;
+    position: relative;
+  }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .menu-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: #1a1a1a; padding: 4px;
+  }
+  .date-display {
+    text-align: center;
+    flex: 1;
+  }
+  .day-name {
+    font-size: 22px; font-weight: 800;
+    color: #1a1a2e; font-style: italic;
+    letter-spacing: 1px;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .full-date {
+    font-size: 13px; color: #444; margin-top: 2px;
+    font-family: 'Inter', sans-serif;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .search-btn {
+    background: rgba(255,255,255,0.6); border: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+  }
+  .profile-pic {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff; font-weight: 700;
+    cursor: pointer;
+  }
+  .content {
+    flex: 1; overflow-y: auto; padding: 0 16px 80px;
+    margin-top: -50px; position: relative; z-index: 2;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  /* STATS CARD */
+  .stats-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .stats-row {
+    display: flex; justify-content: space-between;
+    align-items: baseline; margin-bottom: 12px;
+  }
+  .stats-label { font-size: 14px; font-weight: 600; color: #555; }
+  .stats-value { font-size: 18px; font-weight: 800; color: #0f172a; }
+  .subjects-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    margin-top: 12px;
+  }
+  .subj-label { font-size: 13px; font-weight: 600; color: #64748b; }
+  .subj-tag {
+    background: #eef2ff; border-radius: 30px;
+    padding: 6px 14px; font-size: 12px;
+    color: #3b82f6; font-weight: 600;
+  }
+  .add-subject {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: 1px dashed #cbd5e1;
+    border-radius: 30px; padding: 6px 14px;
+    font-size: 12px; color: #64748b; cursor: pointer;
+  }
+  /* GRAPH CARD */
+  .graph-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .graph-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 14px; font-weight: 800; color: #1a1a2e;
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .show-graph-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: #3b82f6;
+  }
+  .chart-container { height: 120px; }
+  /* RECENT ACTIVITY */
+  .activity-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .activity-title {
+    font-size: 14px; font-weight: 800; color: #1a1a2e;
+    text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .activity-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid #f5f5f5;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6B8CFF; flex-shrink: 0;
+  }
+  .activity-text { font-size: 13px; color: #1e293b; flex: 1; }
+  .activity-time { font-size: 11px; color: #94a3b8; }
+  /* MINI CALENDAR & SCHEDULE */
+  .calendar-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .calendar-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 12px;
+  }
+  .cal-month {
+    font-weight: 700; color: #0f172a;
+  }
+  .cal-nav button {
+    background: #f1f5f9; border: none;
+    width: 32px; height: 32px; border-radius: 32px;
+    cursor: pointer; font-size: 14px;
+  }
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 6px; text-align: center; margin-bottom: 16px;
+  }
+  .cal-weekday {
+    font-size: 11px; font-weight: 600; color: #94a3b8;
+    padding: 6px 0;
+  }
+  .cal-day {
+    font-size: 13px; font-weight: 500; padding: 8px 0;
+    border-radius: 30px; cursor: pointer;
+    color: #334155;
+  }
+  .cal-day.today {
+    background: #3b82f6; color: white;
+  }
+  .cal-day.has-event {
+    background: #fee2e2; color: #dc2626;
+  }
+  .upcoming-list {
+    margin-top: 12px;
+  }
+  .upcoming-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0; border-top: 1px solid #f1f5f9;
+  }
+  .upcoming-time { font-size: 12px; font-weight: 600; color: #3b82f6; width: 60px; }
+  .upcoming-text { font-size: 13px; color: #1e293b; flex: 1; }
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-radius: 0 0 44px 44px;
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 8px 12px 20px; z-index: 10;
+  }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    padding: 6px 12px; border-radius: 40px;
+    color: #94a3b8; font-size: 22px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-btn.active { color: #3b82f6; }
+  .nav-btn span { font-size: 10px; font-weight: 600; }
+  .nav-center-btn {
+    width: 52px; height: 52px; border-radius: 52px;
+    background: #3b82f6; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer;
+    box-shadow: 0 6px 12px rgba(59,130,246,0.3);
+    color: white; text-decoration: none;
+    transition: transform 0.2s;
+  }
+  .nav-center-btn:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Drawer Overlay -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
+    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-avatar" id="drawerAvatar">U</div>
+        <div class="drawer-user-info">
+          <span class="drawer-username" id="drawerUsername">User</span>
+          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
+        </div>
+      </div>
+      <nav class="drawer-nav">
+        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
+        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
+        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
+        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
+        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
+        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quiz</a>
+        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
+        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
+        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
+      </nav>
+      <button class="drawer-logout" onclick="window.location.href='logout.html'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+      <input type="text" id="searchInput" placeholder="Search subjects, activities...">
+      <div id="searchResults" style="max-height: 250px; overflow-y: auto;"></div>
+      <button class="btn-cancel" onclick="closeSearch()" style="margin-top: 12px; background:#f1f5f9; border:none; padding:10px; border-radius:40px; width:100%;">Close</button>
+    </div>
+  </div>
+
+  <div class="header-gradient">
+    <div class="top-bar">
+      <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+      <div class="date-display">
+        <div class="day-name" id="dayName"></div>
+        <div class="full-date" id="fullDate"></div>
+      </div>
+      <div class="header-right">
+        <button class="search-btn"><i class="fas fa-search"></i></button>
+        <div class="profile-pic" id="profilePic" onclick="window.location.href='profile.html'">U</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Stats Card -->
+    <div class="stats-card">
+      <div class="stats-row">
+        <span class="stats-label">Today's Study</span>
+        <span class="stats-value" id="todayTime">0h 0m</span>
+      </div>
+      <div class="subjects-row">
+        <span class="subj-label">Subjects</span>
+        <div id="subjectTags"></div>
+        <div class="add-subject" id="addSubjectBtn"><i class="fas fa-plus"></i> Add</div>
+      </div>
+    </div>
+
+    <!-- Graph Card -->
+    <div class="graph-card">
+      <div class="graph-header">
+        <span class="section-title"><i class="fas fa-chart-simple"></i> Study Trend</span>
+        <button class="show-graph-btn" id="toggleGraphBtn">Hide Graph</button>
+      </div>
+      <div class="chart-container" id="chartContainer">
+        <canvas id="studyChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Mini Calendar + Schedule -->
+    <div class="calendar-card">
+      <div class="calendar-header">
+        <span class="cal-month" id="calMonthYear"></span>
+        <div class="cal-nav">
+          <button id="prevMonthBtn"><i class="fas fa-chevron-left"></i></button>
+          <button id="nextMonthBtn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="upcoming-list" id="upcomingList">
+        <div class="upcoming-item"><span class="upcoming-time">No upcoming</span><span class="upcoming-text">Add schedule from calendar page</span></div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="activity-card">
+      <div class="activity-title"><i class="fas fa-history"></i> Recent Activity</div>
+      <div id="activityList"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a class="nav-btn active" href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a class="nav-btn" href="subject.html"><i class="fas fa-book"></i><span>Lessons</span></a>
+    <a class="nav-center-btn" href="notes.html"><i class="fas fa-plus"></i></a>
+    <a class="nav-btn" href="progress.html"><i class="fas fa-chart-line"></i><span>Graphs</span></a>
+    <a class="nav-btn" href="schedule.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a>
+  </div>
+</div>
+
+<script>
+  const email = localStorage.getItem('brainory_currentUser');
+  if (!email) window.location.href = 'login.html';
+
+  const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
+  const user = users[email] || { username: email.split('@')[0], email };
+  const storageKey = 'brainory_' + email;
+  let appData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  if (!appData.subjects) appData.subjects = ['IT 321', 'IT 505', 'IT 327'];
+  if (!appData.activities) appData.activities = [
+    { date: new Date().toISOString().slice(0,10), time: '10:30 AM', subject: 'IT 321', duration: '1h 30m' },
+    { date: new Date().toISOString().slice(0,10), time: '2:00 PM', subject: 'IT 327', duration: '3h 30m' },
+    { date: new Date().toISOString().slice(0,10), time: '10:00 PM', subject: 'IT 505', duration: '2h 30m' },
+    { date: new Date().toISOString().slice(0,10), time: '9:00 AM', subject: 'IT 321', duration: '1h 0m' }
+  ];
+  if (!appData.schedules) appData.schedules = [
+    { title: 'Study group', date: new Date().toISOString().slice(0,10), time: '4:00 PM' },
+    { title: 'Quiz review', date: new Date(new Date().setDate(new Date().getDate()+2)).toISOString().slice(0,10), time: '6:00 PM' }
+  ];
+  localStorage.setItem(storageKey, JSON.stringify(appData));
+
+  function updateDashboard() {
+    const tagsContainer = document.getElementById('subjectTags');
+    tagsContainer.innerHTML = '';
+    appData.subjects.forEach(s => {
+      const tag = document.createElement('span');
+      tag.className = 'subj-tag';
+      tag.textContent = s;
+      tagsContainer.appendChild(tag);
+    });
+
+    let totalMins = 0;
+    const todayStr = new Date().toISOString().slice(0,10);
+    appData.activities.forEach(a => {
+      if (a.date === todayStr) {
+        const match = a.duration.match(/(\d+)h\s*(\d+)m/) || a.duration.match(/(\d+)h/);
+        if (match) {
+          if (match[2]) totalMins += parseInt(match[1])*60 + parseInt(match[2]);
+          else totalMins += parseInt(match[1])*60;
+        }
+      }
+    });
+    const h = Math.floor(totalMins/60), m = totalMins % 60;
+    document.getElementById('todayTime').innerHTML = `${h}h ${m}m`;
+
+    const actContainer = document.getElementById('activityList');
+    actContainer.innerHTML = '';
+    appData.activities.slice(0,5).forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'activity-item';
+      div.innerHTML = `<div class="activity-dot"></div><div class="activity-text">${a.subject} (${a.duration})</div><div class="activity-time">${a.time}</div>`;
+      actContainer.appendChild(div);
+    });
+  }
+
+  // ---------- Mini Calendar ----------
+  let currentCalDate = new Date();
+  function renderMiniCalendar() {
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const today = new Date();
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calMonthYear').innerHTML = `${monthNames[month]} ${year}`;
+
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    const weekdays = ['S','M','T','W','T','F','S'];
+    weekdays.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'cal-weekday';
+      div.textContent = d;
+      grid.appendChild(div);
+    });
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cal-day';
+      empty.innerHTML = '';
+      grid.appendChild(empty);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'cal-day';
+      dayDiv.textContent = d;
+      const isToday = (d === today.getDate() && month === today.getMonth() && year === today.getFullYear());
+      if (isToday) dayDiv.classList.add('today');
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hasEvent = appData.schedules && appData.schedules.some(s => s.date === dateStr);
+      if (hasEvent) dayDiv.classList.add('has-event');
+      dayDiv.onclick = () => alert(`Selected ${dateStr}\nYou can add schedule on Calendar page.`);
+      grid.appendChild(dayDiv);
+    }
+
+    const upcomingDiv = document.getElementById('upcomingList');
+    upcomingDiv.innerHTML = '';
+    const todayStr = new Date().toISOString().slice(0,10);
+    const upcoming = (appData.schedules || []).filter(s => s.date >= todayStr).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+    if (upcoming.length === 0) {
+      upcomingDiv.innerHTML = '<div class="upcoming-item"><span class="upcoming-time">—</span><span class="upcoming-text">No upcoming schedules</span></div>';
+    } else {
+      upcoming.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'upcoming-item';
+        item.innerHTML = `<span class="upcoming-time">${s.date.slice(5)}</span><span class="upcoming-text">${s.title}</span>`;
+        upcomingDiv.appendChild(item);
+      });
+    }
+  }
+
+  // ---------- Chart ----------
+  let chart;
+  const ctx = document.getElementById('studyChart').getContext('2d');
+  function initChart() {
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          data: [2.5, 4, 3, 5, 3.5, 4.5, 3],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+        scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { display: false } }
+      }
+    });
+  }
+  let chartVisible = true;
+  document.getElementById('toggleGraphBtn').onclick = () => {
+    const container = document.getElementById('chartContainer');
+    const btn = document.getElementById('toggleGraphBtn');
+    if (chartVisible) {
+      container.style.display = 'none';
+      btn.innerHTML = 'Show Graph';
+    } else {
+      container.style.display = 'block';
+      btn.innerHTML = 'Hide Graph';
+      setTimeout(() => chart.resize(), 50);
+    }
+    chartVisible = !chartVisible;
+  };
+
+  // ---------- Add subject ----------
+  document.getElementById('addSubjectBtn').onclick = () => {
+    let newSub = prompt('Enter subject name:');
+    if (newSub) {
+      appData.subjects.push(newSub);
+      localStorage.setItem(storageKey, JSON.stringify(appData));
+      updateDashboard();
+    }
+  };
+
+  // ---------- User info and date ----------
+  const initial = (user.username || email).charAt(0).toUpperCase();
+  document.getElementById('profilePic').innerHTML = initial;
+  document.getElementById('drawerAvatar').innerHTML = initial;
+  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
+  document.getElementById('drawerEmail').innerHTML = email;
+
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dayName').innerHTML = days[now.getDay()];
+  document.getElementById('fullDate').innerHTML = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+  function openDrawer() {
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+  }
+  window.openDrawer = openDrawer; window.closeDrawer = closeDrawer;
+
+  // Calendar navigation
+  document.getElementById('prevMonthBtn').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth()-1); renderMiniCalendar(); };
+  document.getElementById('nextMonthBtn').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth()+1); renderMiniCalendar(); };
+
+  updateDashboard();
+  initChart();
+  renderMiniCalendar();
+
+  function openSearch() {
+    document.getElementById('searchModal').classList.add('open');
+    document.getElementById('searchInput').focus();
+  }
+  function closeSearch() {
+    document.getElementById('searchModal').classList.remove('open');
+  }
+  document.querySelector('.search-btn').onclick = openSearch;
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    const resultsDiv = document.getElementById('searchResults');
+    if (!query.trim()) { resultsDiv.innerHTML = '<div style="padding:10px;">Type to search...</div>'; return; }
+    const matches = [];
+    appData.activities.forEach(act => {
+      if (act.subject.toLowerCase().includes(query)) matches.push(`📘 ${act.subject} - ${act.duration} (${act.time})`);
+    });
+    appData.subjects.forEach(sub => {
+      if (sub.toLowerCase().includes(query)) matches.push(`📚 Subject: ${sub}`);
+    });
+    if (matches.length === 0) resultsDiv.innerHTML = '<div style="padding:10px;">No results found.</div>';
+    else resultsDiv.innerHTML = matches.map(m => `<div class="search-result-item">${m}</div>`).join('');
+  });
+</script>
+</body>
+</html>

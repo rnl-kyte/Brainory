@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Brainory - Schedule</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: #eef2f5;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: #f8fafc;
+    display: flex; flex-direction: column;
+    border-radius: 44px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden; position: relative;
+  }
+  /* DRAWER */
+  .drawer-overlay {
+    position: absolute; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    display: none; border-radius: 44px;
+  }
+  .drawer-overlay.open { display: block; }
+  .drawer {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 280px; background: #fff;
+    border-radius: 0 24px 24px 0;
+    padding: 48px 0 32px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    display: flex; flex-direction: column;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    z-index: 101;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .drawer-avatar {
+    width: 48px; height: 48px; border-radius: 28px;
+    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: #fff;
+  }
+  .drawer-user-info { display: flex; flex-direction: column; }
+  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
+  .drawer-email { font-size: 12px; color: #64748b; }
+  .drawer-nav { flex: 1; padding: 16px 0; }
+  .drawer-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; cursor: pointer;
+    font-size: 14px; color: #334155; font-weight: 500;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
+  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
+  .drawer-logout {
+    margin: 16px 20px;
+    background: #fee2e2; border: none; border-radius: 40px;
+    padding: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: #dc2626;
+    transition: 0.2s;
+  }
+  /* HEADER GRADIENT */
+  .header-gradient {
+    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
+    padding: 28px 20px 50px;
+    position: relative;
+  }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .menu-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: #1a1a1a; padding: 4px;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .search-btn {
+    background: rgba(255,255,255,0.6); border: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+  }
+  .profile-pic {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff; font-weight: 700;
+    cursor: pointer;
+  }
+  .page-title {
+    font-size: 26px; font-weight: 800;
+    color: #1a1a2e; margin-top: 8px;
+    font-style: italic; font-family: Georgia, 'Times New Roman', serif;
+  }
+  /* SEARCH MODAL */
+  .search-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+  }
+  .search-modal.open { display: flex; }
+  .search-modal-content {
+    background: white; width: 320px; border-radius: 28px;
+    padding: 20px; max-height: 80vh; overflow-y: auto;
+    text-align: center;
+  }
+  .search-modal-content input {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 16px;
+  }
+  .search-result-item {
+    padding: 12px; border-bottom: 1px solid #f1f5f9;
+    text-align: left; font-size: 14px;
+  }
+  .btn-cancel {
+    background: #f1f5f9; border: none;
+    padding: 10px; border-radius: 40px; width: 100%;
+    font-weight: 600; cursor: pointer;
+  }
+  .reminder-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 250;
+    display: none; align-items: center; justify-content: center;
+  }
+  .reminder-modal.open { display: flex; }
+  .reminder-modal-content {
+    background: white; width: 300px; border-radius: 28px;
+    padding: 24px; text-align: center;
+  }
+  .reminder-modal-content h3 {
+    margin-bottom: 16px; color: #0f172a;
+  }
+  .reminder-modal-content input {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 16px;
+  }
+  .reminder-modal-buttons {
+    display: flex; gap: 12px;
+  }
+  .reminder-modal-buttons button {
+    flex: 1; padding: 10px; border-radius: 40px;
+    border: none; font-weight: 600; cursor: pointer;
+  }
+  .reminder-save {
+    background: #3b82f6; color: white;
+  }
+  .reminder-clear {
+    background: #fee2e2; color: #dc2626;
+  }
+  .reminder-cancel {
+    background: #f1f5f9; color: #334155;
+  }
+  /* MAIN SCROLLABLE CONTENT */
+  .content {
+    flex: 1; overflow-y: auto; padding: 0 16px 80px;
+    margin-top: -36px; position: relative; z-index: 2;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  /* CALENDAR CARD */
+  .calendar-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 28px; padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  .cal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .cal-nav-btn {
+    background: #f1f5f9; border: none;
+    width: 36px; height: 36px; border-radius: 36px;
+    font-size: 18px; cursor: pointer; color: #1e293b;
+  }
+  .cal-month-year {
+    font-size: 16px; font-weight: 700; color: #0f172a;
+  }
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 4px; text-align: center;
+  }
+  .cal-day-name {
+    font-size: 12px; font-weight: 600; color: #64748b;
+    padding: 8px 0;
+  }
+  .cal-day {
+    font-size: 14px; font-weight: 500; padding: 8px 0;
+    border-radius: 40px; cursor: pointer;
+    color: #334155; transition: 0.2s;
+    margin: 2px;
+  }
+  .cal-day:hover { background: #eef2ff; }
+  .cal-day.today {
+    background: #3b82f6; color: white;
+    font-weight: 600;
+  }
+  .cal-day.selected {
+    background: #F5E642; color: #1a1a2e;
+    font-weight: 700;
+  }
+  .cal-day.other-month { color: #cbd5e1; }
+  .done-row {
+    text-align: right; margin-top: 12px;
+  }
+  .done-btn {
+    background: none; border: none;
+    font-size: 13px; font-weight: 600; color: #3b82f6;
+    cursor: pointer;
+  }
+  .time-slots-container {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 28px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .time-slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .time-slot:active { background: #eef2ff; border-radius: 20px; }
+  .time-slot .time {
+    font-size: 16px; font-weight: 500; color: #1e293b;
+  }
+  .time-slot .alarm-icon {
+    font-size: 20px; color: #3b82f6;
+  }
+  .time-slot .reminder-text {
+    font-size: 13px; color: #64748b; margin-left: auto; margin-right: 12px;
+    max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-radius: 0 0 44px 44px;
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 8px 12px 20px; z-index: 10;
+  }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    padding: 6px 12px; border-radius: 40px;
+    color: #94a3b8; font-size: 22px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-btn.active { color: #3b82f6; }
+  .nav-btn span { font-size: 10px; font-weight: 600; }
+  .nav-center-btn {
+    width: 52px; height: 52px; border-radius: 52px;
+    background: #3b82f6; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer;
+    box-shadow: 0 6px 12px rgba(59,130,246,0.3);
+    color: white; text-decoration: none;
+    transition: transform 0.2s;
+  }
+  .nav-center-btn:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
+    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-avatar" id="drawerAvatar">U</div>
+        <div class="drawer-user-info">
+          <span class="drawer-username" id="drawerUsername">User</span>
+          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
+        </div>
+      </div>
+      <nav class="drawer-nav">
+        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
+        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
+        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
+        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
+        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
+        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quiz</a>
+        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
+        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
+        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
+      </nav>
+      <button class="drawer-logout" onclick="window.location.href='logout.html'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+      <input type="text" id="searchInput" placeholder="Search reminders...">
+      <div id="searchResults" style="max-height: 250px; overflow-y: auto;"></div>
+      <button class="btn-cancel" onclick="closeSearch()">Close</button>
+    </div>
+  </div>
+
+  <div class="reminder-modal" id="reminderModal">
+    <div class="reminder-modal-content">
+      <h3>Set Reminder</h3>
+      <input type="text" id="reminderInput" placeholder="e.g., Study Math" autocomplete="off">
+      <div class="reminder-modal-buttons">
+        <button class="reminder-save" id="reminderSaveBtn">Save</button>
+        <button class="reminder-clear" id="reminderClearBtn">Clear</button>
+        <button class="reminder-cancel" id="reminderCancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header-gradient">
+    <div class="top-bar">
+      <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+      <div class="header-right">
+        <button class="search-btn" id="searchButton"><i class="fas fa-search"></i></button>
+        <div class="profile-pic" id="profilePic" onclick="window.location.href='profile.html'">U</div>
+      </div>
+    </div>
+    <div class="page-title">Calendar Schedule</div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="content">
+    <!-- Calendar Card -->
+    <div class="calendar-card">
+      <div class="cal-header">
+        <button class="cal-nav-btn" onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+        <div class="cal-month-year" id="calMonthYear"></div>
+        <button class="cal-nav-btn" onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="done-row">
+        <button class="done-btn" onclick="refreshSchedule()"><i class="fas fa-check-circle"></i> Done</button>
+      </div>
+    </div>
+
+    <div class="time-slots-container">
+      <div class="time-slot" data-time="1:00 am">
+        <span class="time">🕐 1:00 am</span>
+        <span class="reminder-text" id="reminder-1:00 am"></span>
+        <i class="fas fa-bell alarm-icon"></i>
+      </div>
+      <div class="time-slot" data-time="2:00 am">
+        <span class="time">🕑 2:00 am</span>
+        <span class="reminder-text" id="reminder-2:00 am"></span>
+        <i class="fas fa-bell alarm-icon"></i>
+      </div>
+      <div class="time-slot" data-time="3:00 am">
+        <span class="time">🕒 3:00 am</span>
+        <span class="reminder-text" id="reminder-3:00 am"></span>
+        <i class="fas fa-bell alarm-icon"></i>
+      </div>
+      <div class="time-slot" data-time="7:00 am">
+        <span class="time">🕖 7:00 am</span>
+        <span class="reminder-text" id="reminder-7:00 am"></span>
+        <i class="fas fa-bell alarm-icon"></i>
+      </div>
+      <div class="time-slot" data-time="8:00 am">
+        <span class="time">🕗 8:00 am</span>
+        <span class="reminder-text" id="reminder-8:00 am"></span>
+        <i class="fas fa-bell alarm-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a class="nav-btn" href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a class="nav-btn" href="subject.html"><i class="fas fa-book"></i><span>Lessons</span></a>
+    <a class="nav-center-btn" href="notes.html"><i class="fas fa-plus"></i></a>
+    <a class="nav-btn" href="progress.html"><i class="fas fa-chart-line"></i><span>Graphs</span></a>
+    <a class="nav-btn active" href="schedule.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a>
+  </div>
+</div>
+
+<script>
+  const email = localStorage.getItem('brainory_currentUser');
+  if (!email) window.location.href = 'login.html';
+  const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
+  const user = users[email] || { username: email.split('@')[0], email };
+  const storageKey = 'brainory_' + email;
+  let appData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  if (!appData.alarms) appData.alarms = {};
+
+  // ---------- Calendar ----------
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let viewYear = new Date().getFullYear();
+  let viewMonth = new Date().getMonth();
+  let selectedDay = new Date().getDate();
+
+  function formatDate(year, month, day) {
+    return `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  }
+
+  function getSelectedDateStr() {
+    return formatDate(viewYear, viewMonth, selectedDay);
+  }
+
+  function updateReminderDisplay() {
+    const dateStr = getSelectedDateStr();
+    const alarmsForDay = appData.alarms[dateStr] || {};
+    const times = ['1:00 am', '2:00 am', '3:00 am', '7:00 am', '8:00 am'];
+    times.forEach(time => {
+      const reminderSpan = document.getElementById(`reminder-${time}`);
+      if (reminderSpan) {
+        const text = alarmsForDay[time];
+        reminderSpan.textContent = text ? `🔔 ${text}` : '';
+      }
+    });
+  }
+
+  function renderCalendar() {
+    document.getElementById('calMonthYear').textContent = `${months[viewMonth]} ${viewYear}`;
+    const grid = document.getElementById('calGrid');
+    grid.innerHTML = '';
+    const dayNames = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    dayNames.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'cal-day-name';
+      div.textContent = d;
+      grid.appendChild(div);
+    });
+    let firstDayIndex = new Date(viewYear, viewMonth, 1).getDay();
+    let offset = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+    const today = new Date();
+
+    for (let i = offset - 1; i >= 0; i--) {
+      const dayNum = prevMonthDays - i;
+      const div = document.createElement('div');
+      div.className = 'cal-day other-month';
+      div.textContent = dayNum;
+      div.onclick = () => {
+        let newYear = viewYear, newMonth = viewMonth - 1;
+        if (newMonth < 0) { newMonth = 11; newYear--; }
+        viewYear = newYear; viewMonth = newMonth;
+        selectedDay = dayNum;
+        renderCalendar();
+        updateReminderDisplay();
+      };
+      grid.appendChild(div);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const div = document.createElement('div');
+      let className = 'cal-day';
+      if (d === today.getDate() && viewMonth === today.getMonth() && viewYear === today.getFullYear()) className += ' today';
+      if (d === selectedDay) className += ' selected';
+      div.className = className;
+      div.textContent = d;
+      div.onclick = () => { selectedDay = d; renderCalendar(); updateReminderDisplay(); };
+      grid.appendChild(div);
+    }
+
+    const totalCells = 42;
+    const currentCells = offset + daysInMonth;
+    const remaining = totalCells - currentCells;
+    for (let d = 1; d <= remaining; d++) {
+      const div = document.createElement('div');
+      div.className = 'cal-day other-month';
+      div.textContent = d;
+      div.onclick = () => {
+        let newYear = viewYear, newMonth = viewMonth + 1;
+        if (newMonth > 11) { newMonth = 0; newYear++; }
+        viewYear = newYear; viewMonth = newMonth;
+        selectedDay = d;
+        renderCalendar();
+        updateReminderDisplay();
+      };
+      grid.appendChild(div);
+    }
+  }
+
+  function prevMonth() { viewMonth--; if (viewMonth < 0) { viewMonth = 11; viewYear--; } renderCalendar(); updateReminderDisplay(); }
+  function nextMonth() { viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; } renderCalendar(); updateReminderDisplay(); }
+  function refreshSchedule() { updateReminderDisplay(); }
+
+  // ---------- Custom Reminder Modal ----------
+  let currentTimeSlot = null;
+  let currentReminderText = '';
+
+  function openReminderModal(timeSlot, existingText) {
+    currentTimeSlot = timeSlot;
+    currentReminderText = existingText || '';
+    const input = document.getElementById('reminderInput');
+    input.value = currentReminderText;
+    document.getElementById('reminderModal').classList.add('open');
+    input.focus();
+  }
+  function closeReminderModal() {
+    document.getElementById('reminderModal').classList.remove('open');
+    currentTimeSlot = null;
+  }
+  function saveReminder() {
+    if (!currentTimeSlot) return;
+    const newText = document.getElementById('reminderInput').value.trim();
+    const dateStr = getSelectedDateStr();
+    if (!appData.alarms[dateStr]) appData.alarms[dateStr] = {};
+    if (newText !== "") {
+      appData.alarms[dateStr][currentTimeSlot] = newText;
+    } else {
+      delete appData.alarms[dateStr][currentTimeSlot];
+      if (Object.keys(appData.alarms[dateStr]).length === 0) delete appData.alarms[dateStr];
+    }
+    localStorage.setItem(storageKey, JSON.stringify(appData));
+    updateReminderDisplay();
+    closeReminderModal();
+  }
+  function clearReminder() {
+    if (!currentTimeSlot) return;
+    const dateStr = getSelectedDateStr();
+    if (appData.alarms[dateStr] && appData.alarms[dateStr][currentTimeSlot]) {
+      delete appData.alarms[dateStr][currentTimeSlot];
+      if (Object.keys(appData.alarms[dateStr]).length === 0) delete appData.alarms[dateStr];
+      localStorage.setItem(storageKey, JSON.stringify(appData));
+      updateReminderDisplay();
+    }
+    closeReminderModal();
+  }
+
+  document.querySelectorAll('.time-slot').forEach(slot => {
+    const time = slot.getAttribute('data-time');
+    slot.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dateStr = getSelectedDateStr();
+      const existing = (appData.alarms[dateStr] && appData.alarms[dateStr][time]) ? appData.alarms[dateStr][time] : '';
+      openReminderModal(time, existing);
+    });
+  });
+
+  document.getElementById('reminderSaveBtn').onclick = saveReminder;
+  document.getElementById('reminderClearBtn').onclick = clearReminder;
+  document.getElementById('reminderCancelBtn').onclick = closeReminderModal;
+
+  // ---------- Search ----------
+  function openSearch() {
+    document.getElementById('searchModal').classList.add('open');
+    document.getElementById('searchInput').focus();
+  }
+  function closeSearch() {
+    document.getElementById('searchModal').classList.remove('open');
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('searchInput').value = '';
+  }
+  document.getElementById('searchButton').onclick = openSearch;
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+    const resultsDiv = document.getElementById('searchResults');
+    if (!query.trim()) { resultsDiv.innerHTML = '<div style="padding:10px;">Type to search reminders...</div>'; return; }
+    const matches = [];
+    for (const [date, times] of Object.entries(appData.alarms)) {
+      for (const [time, text] of Object.entries(times)) {
+        if (text.toLowerCase().includes(query) || time.includes(query)) {
+          matches.push(`📅 ${date} at ${time}: ${text}`);
+        }
+      }
+    }
+    if (matches.length === 0) resultsDiv.innerHTML = '<div style="padding:10px;">No matching reminders.</div>';
+    else resultsDiv.innerHTML = matches.map(m => `<div class="search-result-item">${m}</div>`).join('');
+  });
+
+  // ---------- Drawer ----------
+  function openDrawer() { document.getElementById('drawerOverlay').classList.add('open'); document.getElementById('drawer').classList.add('open'); }
+  function closeDrawer() { document.getElementById('drawerOverlay').classList.remove('open'); document.getElementById('drawer').classList.remove('open'); }
+  window.openDrawer = openDrawer; window.closeDrawer = closeDrawer;
+  window.prevMonth = prevMonth; window.nextMonth = nextMonth; window.refreshSchedule = refreshSchedule;
+
+  // ---------- User info ----------
+  const initial = (user.username || email).charAt(0).toUpperCase();
+  document.getElementById('profilePic').innerHTML = initial;
+  document.getElementById('drawerAvatar').innerHTML = initial;
+  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
+  document.getElementById('drawerEmail').innerHTML = email;
+
+  renderCalendar();
+  updateReminderDisplay();
+</script>
+</body>
+</html>

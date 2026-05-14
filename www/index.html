@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Brainory</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+    background: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: linear-gradient(180deg, #A8C8E8 0%, #B8D4C8 35%, #D4E4A0 70%, #F0F080 100%);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    position: relative; overflow: hidden;
+    border-radius: 40px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .logo-container {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 16px;
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  .logo-img {
+    width: 120px; height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px;
+  }
+  .logo-svg { width: 110px; height: 110px; }
+  .brand-name {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #1a3a5c;
+    font-family: 'Georgia', serif;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="logo-container">
+    <svg class="logo-svg" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="55" height="68" rx="4" fill="#8BB8D4" transform="rotate(-8 20 30)"/>
+      <rect x="25" y="28" width="55" height="68" rx="4" fill="#A8CCDC" transform="rotate(-4 25 28)"/>
+      <rect x="30" y="26" width="55" height="68" rx="4" fill="#C8DDE8"/>
+      <rect x="30" y="26" width="8" height="68" rx="2" fill="#8BB8D4"/>
+      <ellipse cx="62" cy="58" rx="16" ry="14" fill="#7EC8C8" opacity="0.7"/>
+      <path d="M52 55 Q55 48 62 50 Q69 48 72 55 Q75 62 69 66 Q62 70 55 66 Q49 62 52 55Z" fill="#5BA8A8" opacity="0.8"/>
+      <path d="M55 52 Q58 55 62 53 Q66 55 66 58 Q66 62 62 63 Q58 63 55 58Z" fill="#4A9898" opacity="0.6"/>
+    </svg>
+    <div class="brand-name">BRAINORY</div>
+  </div>
+</div>
+<script>
+  setTimeout(() => { window.location.href = 'onboardingscreen.html'; }, 2000);
+</script>
+</body>
+</html>

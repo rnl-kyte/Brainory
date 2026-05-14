@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Brainory - Lessons</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: #eef2f5;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: #f8fafc;
+    display: flex; flex-direction: column;
+    border-radius: 44px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden; position: relative;
+  }
+  /* DRAWER */
+  .drawer-overlay {
+    position: absolute; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    display: none; border-radius: 44px;
+  }
+  .drawer-overlay.open { display: block; }
+  .drawer {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 280px; background: #fff;
+    border-radius: 0 24px 24px 0;
+    padding: 48px 0 32px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
+    display: flex; flex-direction: column;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    z-index: 101;
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-header {
+    padding: 0 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .drawer-avatar {
+    width: 48px; height: 48px; border-radius: 28px;
+    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: #fff;
+  }
+  .drawer-user-info { display: flex; flex-direction: column; }
+  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
+  .drawer-email { font-size: 12px; color: #64748b; }
+  .drawer-nav { flex: 1; padding: 16px 0; }
+  .drawer-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 20px; cursor: pointer;
+    font-size: 14px; color: #334155; font-weight: 500;
+    text-decoration: none; transition: all 0.2s;
+  }
+  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
+  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
+  .drawer-logout {
+    margin: 16px 20px;
+    background: #fee2e2; border: none; border-radius: 40px;
+    padding: 12px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 14px; font-weight: 600; color: #dc2626;
+    transition: 0.2s;
+  }
+  /* HEADER GRADIENT */
+  .header-gradient {
+    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
+    padding: 28px 20px 50px;
+    position: relative;
+  }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .menu-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: #1a1a1a; padding: 4px;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .search-btn {
+    background: rgba(255,255,255,0.6); border: none;
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer;
+  }
+  .profile-pic {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: #fff; font-weight: 700;
+    cursor: pointer;
+  }
+  .page-title {
+    font-size: 26px; font-weight: 800;
+    color: #1a1a2e; margin-top: 8px;
+    font-style: italic; font-family: Georgia, 'Times New Roman', serif;
+  }
+  .save-status {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+    padding: 4px 20px;
+    min-height: 20px;
+  }
+  /* SEARCH MODAL */
+  .search-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    display: none; align-items: center; justify-content: center;
+  }
+  .search-modal.open { display: flex; }
+  .search-modal-content {
+    background: white; width: 320px; border-radius: 28px;
+    padding: 20px; max-height: 80vh; overflow-y: auto;
+    text-align: center;
+  }
+  .search-modal-content input {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 16px;
+  }
+  .search-result-item {
+    padding: 12px; border-bottom: 1px solid #f1f5f9;
+    text-align: left; font-size: 14px;
+  }
+  .btn-cancel {
+    background: #f1f5f9; border: none;
+    padding: 10px; border-radius: 40px; width: 100%;
+    font-weight: 600; cursor: pointer;
+  }
+  /* EDIT NOTE MODAL */
+  .edit-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 300;
+    display: none; align-items: center; justify-content: center;
+  }
+  .edit-modal.open { display: flex; }
+  .edit-modal-content {
+    background: white; width: 340px; border-radius: 28px;
+    padding: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .edit-modal-content h3 { margin-bottom: 16px; color: #0f172a; }
+  .edit-modal-content input, .edit-modal-content textarea {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 12px;
+    font-size: 14px;
+  }
+  .edit-modal-content textarea { border-radius: 20px; min-height: 150px; }
+  .edit-buttons { display: flex; gap: 12px; }
+  .edit-buttons button { flex: 1; padding: 10px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
+  .save-edit { background: #3b82f6; color: white; }
+  .cancel-edit { background: #f1f5f9; color: #334155; }
+  /* DELETE CONFIRM MODAL */
+  .delete-modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 350;
+    display: none; align-items: center; justify-content: center;
+  }
+  .delete-modal.open { display: flex; }
+  .delete-modal-content {
+    background: white; width: 280px; border-radius: 28px;
+    padding: 24px;
+    text-align: center;
+  }
+  .delete-modal-content p { margin-bottom: 20px; color: #1e293b; }
+  .delete-buttons { display: flex; gap: 12px; }
+  .delete-buttons button { flex: 1; padding: 10px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
+  .delete-confirm { background: #ef4444; color: white; }
+  .delete-cancel { background: #f1f5f9; color: #334155; }
+  /* MAIN CONTENT */
+  .content {
+    flex: 1; overflow-y: auto; padding: 16px 16px 80px;
+    margin-top: -36px; position: relative; z-index: 2;
+  }
+  .content::-webkit-scrollbar { display: none; }
+  .subject-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .subject-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .subject-header:active { background: rgba(0,0,0,0.05); }
+  .subject-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .subject-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .delete-subject-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #94a3b8;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+  .delete-subject-btn:hover { color: #ef4444; }
+  .subject-icon {
+    font-size: 20px;
+    color: #64748b;
+    transition: transform 0.3s;
+  }
+  .subject-icon.rotated { transform: rotate(180deg); }
+  .topics-container {
+    border-top: 1px solid #e2e8f0;
+    display: none;
+  }
+  .topics-container.open { display: block; }
+  .topic-item {
+    padding: 14px 20px 14px 40px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .topic-item:last-child { border-bottom: none; }
+  .topic-item:active { background: rgba(0,0,0,0.03); }
+  .topic-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1e293b;
+  }
+  .topic-arrow {
+    font-size: 14px;
+    color: #94a3b8;
+    transition: transform 0.3s;
+  }
+  .topic-arrow.rotated { transform: rotate(180deg); }
+  .notes-container {
+    background: #f8fafc;
+    padding: 0 20px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .notes-container.open {
+    max-height: 500px;
+    padding: 16px 20px;
+  }
+  .notes-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #334155;
+    white-space: pre-wrap;
+  }
+  .edit-note-btn {
+    background: #e2e8f0;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 12px;
+  }
+  .empty-message {
+    text-align: center;
+    padding: 40px;
+    color: #94a3b8;
+    font-size: 14px;
+  }
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-radius: 0 0 44px 44px;
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 8px 12px 20px; z-index: 10;
+  }
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    padding: 6px 12px; border-radius: 40px;
+    color: #94a3b8; font-size: 22px;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .nav-btn.active { color: #3b82f6; }
+  .nav-btn span { font-size: 10px; font-weight: 600; }
+  .nav-center-btn {
+    width: 52px; height: 52px; border-radius: 52px;
+    background: #3b82f6; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer;
+    box-shadow: 0 6px 12px rgba(59,130,246,0.3);
+    color: white; text-decoration: none;
+    transition: transform 0.2s;
+  }
+  .nav-center-btn:active { transform: scale(0.95); }
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
+    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
+      <div class="drawer-header">
+        <div class="drawer-avatar" id="drawerAvatar">U</div>
+        <div class="drawer-user-info">
+          <span class="drawer-username" id="drawerUsername">User</span>
+          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
+        </div>
+      </div>
+      <nav class="drawer-nav">
+        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
+        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
+        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
+        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
+        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
+        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quizzes</a>
+        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
+        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
+        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
+      </nav>
+      <button class="drawer-logout" onclick="window.location.href='logout.html'"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </div>
+
+  <!-- Search Modal -->
+  <div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+      <input type="text" id="searchInput" placeholder="Search subjects or topics...">
+      <div id="searchResults" style="max-height: 250px; overflow-y: auto;"></div>
+      <button class="btn-cancel" onclick="closeSearch()">Close</button>
+    </div>
+  </div>
+
+  <!-- Edit Note Modal -->
+  <div class="edit-modal" id="editModal">
+    <div class="edit-modal-content">
+      <h3>Edit Lesson</h3>
+      <input type="text" id="editSubject" placeholder="Subject">
+      <input type="text" id="editTopic" placeholder="Topic">
+      <textarea id="editContent" placeholder="Content..."></textarea>
+      <div class="edit-buttons">
+        <button class="save-edit" id="saveEditBtn">Save</button>
+        <button class="cancel-edit" id="cancelEditBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="delete-modal" id="deleteModal">
+    <div class="delete-modal-content">
+      <p>Move this subject and all its lessons to Archive?</p>
+      <div class="delete-buttons">
+        <button class="delete-cancel" id="deleteCancelBtn">Cancel</button>
+        <button class="delete-confirm" id="deleteConfirmBtn">Archive</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="header-gradient">
+    <div class="top-bar">
+      <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+      <div class="header-right">
+        <button class="search-btn" id="searchButton"><i class="fas fa-search"></i></button>
+        <div class="profile-pic" id="profilePic" onclick="window.location.href='profile.html'">U</div>
+      </div>
+    </div>
+    <div class="page-title">Lessons</div>
+  </div>
+
+  <!-- Status message -->
+  <div class="save-status" id="saveStatus"></div>
+
+  <!-- Main Content -->
+  <div class="content" id="lessonsContent"></div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <a class="nav-btn" href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a class="nav-btn active" href="subject.html"><i class="fas fa-book"></i><span>Lessons</span></a>
+    <a class="nav-center-btn" href="notes.html"><i class="fas fa-plus"></i></a>
+    <a class="nav-btn" href="progress.html"><i class="fas fa-chart-line"></i><span>Graphs</span></a>
+    <a class="nav-btn" href="schedule.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a>
+  </div>
+</div>
+
+<script>
+  // ---------- Auth & Data ----------
+  const email = localStorage.getItem('brainory_currentUser');
+  if (!email) window.location.href = 'login.html';
+  const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
+  const user = users[email] || { username: email.split('@')[0], email };
+  const storageKey = 'brainory_' + email;
+  let appData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  if (!appData.notes) appData.notes = [];
+  if (!appData.archived) appData.archived = [];
+
+  let currentEditNoteId = null;
+  let pendingDeleteSubject = null;
+
+  // ---------- Archive subject (moves to archive) ----------
+  function archiveSubject(subjectName) {
+    const notesToArchive = appData.notes.filter(n => n.subject === subjectName);
+    if (notesToArchive.length === 0) {
+      showStatus(`No notes found for "${subjectName}".`);
+      return;
+    }
+    appData.archived.unshift({
+      id: Date.now(),
+      subject: subjectName,
+      notes: notesToArchive,
+      archivedDate: new Date().toLocaleString()
+    });
+    appData.notes = appData.notes.filter(n => n.subject !== subjectName);
+    localStorage.setItem(storageKey, JSON.stringify(appData));
+    renderSubjects();
+    showStatus(`"${subjectName}" moved to Archive.`);
+  }
+
+  // ---------- Render lessons grouped by subject ----------
+  function renderSubjects() {
+    const container = document.getElementById('lessonsContent');
+    container.innerHTML = '';
+    
+    const grouped = {};
+    appData.notes.forEach(note => {
+      if (!grouped[note.subject]) grouped[note.subject] = [];
+      grouped[note.subject].push(note);
+    });
+    const subjects = Object.keys(grouped).sort();
+    
+    if (subjects.length === 0) {
+      container.innerHTML = '<div class="empty-message"><i class="fas fa-book-open"></i> No lessons yet. Go to Notes to create your first lesson note.</div>';
+      return;
+    }
+
+    subjects.forEach(subject => {
+      const notes = grouped[subject];
+      const subjectDiv = document.createElement('div');
+      subjectDiv.className = 'subject-card';
+      
+      const headerDiv = document.createElement('div');
+      headerDiv.className = 'subject-header';
+      headerDiv.innerHTML = `
+        <span class="subject-name">${escapeHtml(subject)}</span>
+        <div class="subject-actions">
+          <button class="delete-subject-btn" data-subject="${escapeHtml(subject)}"><i class="fas fa-trash-alt"></i></button>
+          <i class="fas fa-chevron-down subject-icon"></i>
+        </div>
+      `;
+      
+      const deleteBtn = headerDiv.querySelector('.delete-subject-btn');
+      deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pendingDeleteSubject = subject;
+        document.getElementById('deleteModal').classList.add('open');
+      });
+      
+      const topicsContainer = document.createElement('div');
+      topicsContainer.className = 'topics-container';
+      
+      notes.forEach((note) => {
+        const topicDiv = document.createElement('div');
+        topicDiv.className = 'topic-item';
+        const displayTopic = note.topic || 'Untitled Lesson';
+        topicDiv.innerHTML = `
+          <span class="topic-name">${escapeHtml(displayTopic)}</span>
+          <div>
+            <button class="edit-note-btn" data-id="${note.id}">Edit</button>
+            <i class="fas fa-chevron-down topic-arrow"></i>
+          </div>
+        `;
+        
+        const notesContainer = document.createElement('div');
+        notesContainer.className = 'notes-container';
+        const contentHtml = note.content ? escapeHtml(note.content).replace(/\n/g, '<br>') : '<em>No content</em>';
+        notesContainer.innerHTML = `<div class="notes-text">${contentHtml}</div>`;
+        
+        const arrowSpan = topicDiv.querySelector('.topic-arrow');
+        topicDiv.addEventListener('click', (e) => {
+          if (e.target.classList.contains('edit-note-btn')) return;
+          const isOpen = notesContainer.classList.contains('open');
+          if (isOpen) {
+            notesContainer.classList.remove('open');
+            arrowSpan.classList.remove('rotated');
+          } else {
+            notesContainer.classList.add('open');
+            arrowSpan.classList.add('rotated');
+          }
+        });
+        
+        const editBtn = topicDiv.querySelector('.edit-note-btn');
+        editBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openEditModal(note);
+        });
+        
+        topicDiv.appendChild(notesContainer);
+        topicsContainer.appendChild(topicDiv);
+      });
+      
+      let isOpen = false;
+      headerDiv.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-subject-btn')) return;
+        const arrow = headerDiv.querySelector('.subject-icon');
+        if (isOpen) {
+          topicsContainer.classList.remove('open');
+          arrow.classList.remove('rotated');
+        } else {
+          topicsContainer.classList.add('open');
+          arrow.classList.add('rotated');
+        }
+        isOpen = !isOpen;
+      });
+      
+      subjectDiv.appendChild(headerDiv);
+      subjectDiv.appendChild(topicsContainer);
+      container.appendChild(subjectDiv);
+    });
+  }
+
+  // ---------- Edit note modal ----------
+  function openEditModal(note) {
+    currentEditNoteId = note.id;
+    document.getElementById('editSubject').value = note.subject || '';
+    document.getElementById('editTopic').value = note.topic || '';
+    document.getElementById('editContent').value = note.content || '';
+    document.getElementById('editModal').classList.add('open');
+  }
+  
+  function closeEditModal() {
+    document.getElementById('editModal').classList.remove('open');
+    currentEditNoteId = null;
+  }
+  
+  function saveEdit() {
+    if (!currentEditNoteId) return;
+    const noteIndex = appData.notes.findIndex(n => n.id === currentEditNoteId);
+    if (noteIndex !== -1) {
+      appData.notes[noteIndex].subject = document.getElementById('editSubject').value.trim() || 'Untitled';
+      appData.notes[noteIndex].topic = document.getElementById('editTopic').value.trim() || 'Lesson';
+      appData.notes[noteIndex].content = document.getElementById('editContent').value;
+      appData.notes[noteIndex].date = new Date().toLocaleString();
+      localStorage.setItem(storageKey, JSON.stringify(appData));
+      renderSubjects();
+      showStatus('Lesson updated!');
+    }
+    closeEditModal();
+  }
+
+  function showStatus(msg) {
+    const statusDiv = document.getElementById('saveStatus');
+    if (statusDiv) {
+      statusDiv.textContent = msg;
+      setTimeout(() => { if (statusDiv.textContent === msg) statusDiv.textContent = ''; }, 2000);
+    } else {
+      console.log(msg);
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+  }
+
+  // ---------- Search functionality ----------
+  function openSearch() {
+    document.getElementById('searchModal').classList.add('open');
+    document.getElementById('searchInput').focus();
+  }
+  function closeSearch() {
+    document.getElementById('searchModal').classList.remove('open');
+    document.getElementById('searchResults').innerHTML = '';
+    document.getElementById('searchInput').value = '';
+  }
+  document.getElementById('searchButton').onclick = openSearch;
+  document.getElementById('searchInput').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase().trim();
+    const resultsDiv = document.getElementById('searchResults');
+    if (!query) {
+      resultsDiv.innerHTML = '<div style="padding:10px;">Type to search subjects or topics...</div>';
+      return;
+    }
+    const matches = [];
+    appData.notes.forEach(note => {
+      if (note.subject.toLowerCase().includes(query) || (note.topic && note.topic.toLowerCase().includes(query))) {
+        matches.push({ subject: note.subject, topic: note.topic });
+      }
+    });
+    if (matches.length === 0) {
+      resultsDiv.innerHTML = '<div style="padding:10px;">No matching results.</div>';
+    } else {
+      resultsDiv.innerHTML = matches.slice(0, 15).map(m => `
+        <div class="search-result-item">
+          <strong>${escapeHtml(m.subject)}</strong><br>
+          <span style="font-size:12px; color:#64748b;">${escapeHtml(m.topic)}</span>
+        </div>
+      `).join('');
+    }
+  });
+
+  // ---------- Drawer & user info ----------
+  const initial = (user.username || email).charAt(0).toUpperCase();
+  document.getElementById('drawerAvatar').innerHTML = initial;
+  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
+  document.getElementById('drawerEmail').innerHTML = email;
+  document.getElementById('profilePic').innerHTML = initial;
+
+  function openDrawer() {
+    document.getElementById('drawerOverlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+  }
+  function closeDrawer() {
+    document.getElementById('drawerOverlay').classList.remove('open');
+    document.getElementById('drawer').classList.remove('open');
+  }
+  window.openDrawer = openDrawer;
+  window.closeDrawer = closeDrawer;
+
+  // Delete modal handlers
+  document.getElementById('deleteConfirmBtn').onclick = () => {
+    if (pendingDeleteSubject) {
+      archiveSubject(pendingDeleteSubject);
+      pendingDeleteSubject = null;
+    }
+    document.getElementById('deleteModal').classList.remove('open');
+  };
+  document.getElementById('deleteCancelBtn').onclick = () => {
+    pendingDeleteSubject = null;
+    document.getElementById('deleteModal').classList.remove('open');
+  };
+
+  document.getElementById('saveEditBtn').onclick = saveEdit;
+  document.getElementById('cancelEditBtn').onclick = closeEditModal;
+
+  renderSubjects();
+</script>
+</body>
+</html>

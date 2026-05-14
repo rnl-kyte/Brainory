@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>Brainory - Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh; background: #eef2f5;
+    font-family: 'Segoe UI', system-ui, -apple-system, 'Inter', sans-serif;
+  }
+  .phone {
+    width: 390px; height: 844px;
+    background: #F5E642;
+    display: flex; flex-direction: column;
+    border-radius: 44px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    overflow: hidden;
+    position: relative;
+  }
+  .top-section {
+    padding: 48px 24px 0;
+    display: flex; flex-direction: column; align-items: center;
+    z-index: 2;
+  }
+  .brand-small {
+    font-size: 14px; font-weight: 600; letter-spacing: 4px;
+    color: #2d2d2d; align-self: flex-start; margin-bottom: 12px;
+  }
+  .welcome-title {
+    font-size: 42px; font-weight: 800;
+    color: #121212; letter-spacing: -0.5px;
+    margin-bottom: 20px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 40px 40px 0 0;
+    flex: 1;
+    padding: 32px 28px;
+    display: flex; flex-direction: column;
+    position: relative; z-index: 3;
+    margin-top: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.02);
+  }
+  .tab-row {
+    display: flex; background: #f4f6f9;
+    border-radius: 60px; padding: 6px;
+    margin-bottom: 32px;
+  }
+  .tab {
+    flex: 1; padding: 12px 0;
+    text-align: center; font-size: 15px;
+    font-weight: 700; cursor: pointer;
+    border-radius: 50px; border: none;
+    background: none; color: #7f8c8d;
+    transition: all 0.25s;
+    letter-spacing: 0.5px;
+  }
+  .tab.active-login {
+    background: #F5E642; color: #1e1e2a;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  }
+  .tab.active-signup {
+    background: #6B8CFF; color: #fff;
+    box-shadow: 0 2px 10px rgba(107,140,255,0.3);
+  }
+  .form-group {
+    position: relative; margin-bottom: 18px;
+  }
+  .form-input {
+    width: 100%; padding: 16px 48px 16px 18px;
+    background: #f9fafc; border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    font-size: 15px; color: #1e293b; outline: none;
+    transition: all 0.2s;
+  }
+  .form-input:focus {
+    border-color: #F5E642;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(245,230,66,0.2);
+  }
+  .form-input::placeholder { color: #94a3b8; font-weight: 400; }
+  .input-icon {
+    position: absolute; right: 18px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px; color: #94a3b8;
+    pointer-events: none;
+  }
+  .remember-row {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 28px; margin-top: 8px;
+  }
+  .remember-label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #475569;
+  }
+  .forget-link {
+    font-size: 13px; color: #e74c3c;
+    text-decoration: none; font-weight: 500;
+  }
+  .btn-main {
+    width: 100%; padding: 16px;
+    background: #F5E642; border: none; border-radius: 28px;
+    font-size: 16px; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer;
+    color: #1e1e2a;
+    box-shadow: 0 6px 14px rgba(245,230,66,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .btn-main.signup-btn {
+    background: #6B8CFF; color: #fff;
+    box-shadow: 0 6px 14px rgba(107,140,255,0.35);
+  }
+  .btn-main:active { transform: scale(0.97); }
+  .or-row {
+    text-align: center; margin: 24px 0 16px;
+    font-size: 13px; color: #94a3b8;
+    position: relative;
+  }
+  .or-row::before, .or-row::after {
+    content: ""; position: absolute; top: 50%;
+    width: 40%; height: 1px; background: #e2e8f0;
+  }
+  .or-row::before { left: 0; }
+  .or-row::after { right: 0; }
+  .social-row {
+    display: flex; justify-content: center; gap: 24px;
+    margin-top: 8px;
+  }
+  .social-icon {
+    width: 48px; height: 48px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer;
+    background: #f1f5f9; color: #1e293b;
+    border: none; transition: all 0.2s;
+  }
+  .social-icon:hover { background: #e2e8f0; transform: scale(1.05); }
+  .error-msg {
+    color: #e74c3c; font-size: 12px;
+    text-align: center; margin-top: 12px;
+    min-height: 20px;
+  }
+  .panel { display: none; }
+  .panel.active { display: block; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="top-section">
+    <div class="brand-small">BRAINORY</div>
+    <div class="welcome-title">WELCOME</div>
+  </div>
+  <div class="card">
+    <div class="tab-row">
+      <button class="tab active-login" id="tabLogin" onclick="switchTab('login')">LOGIN</button>
+      <button class="tab" id="tabSignup" onclick="switchTab('signup')">SIGN UP</button>
+    </div>
+
+    <!-- Login Panel -->
+    <div class="panel active" id="panelLogin">
+      <div class="form-group">
+        <input class="form-input" id="loginUser" type="text" placeholder="Username or Email">
+        <i class="fas fa-user input-icon"></i>
+      </div>
+      <div class="form-group">
+        <input class="form-input" id="loginPass" type="password" placeholder="Password">
+        <i class="fas fa-lock input-icon"></i>
+      </div>
+      <div class="remember-row">
+        <label class="remember-label">
+          <input type="checkbox" id="rememberMe"> <span>Remember me</span>
+        </label>
+        <a href="#" class="forget-link">Forgot password?</a>
+      </div>
+      <button class="btn-main" onclick="doLogin()">LOGIN</button>
+      <div class="error-msg" id="loginError"></div>
+    </div>
+
+    <!-- Signup Panel -->
+    <div class="panel" id="panelSignup">
+      <div class="form-group">
+        <input class="form-input" id="signupUser" type="text" placeholder="Username">
+        <i class="fas fa-user input-icon"></i>
+      </div>
+      <div class="form-group">
+        <input class="form-input" id="signupEmail" type="email" placeholder="Email address">
+        <i class="fas fa-envelope input-icon"></i>
+      </div>
+      <div class="form-group">
+        <input class="form-input" id="signupPass" type="password" placeholder="Password">
+        <i class="fas fa-key input-icon"></i>
+      </div>
+      <div class="form-group">
+        <input class="form-input" id="signupConfirm" type="password" placeholder="Confirm Password">
+        <i class="fas fa-check-circle input-icon"></i>
+      </div>
+      <button class="btn-main signup-btn" onclick="doSignup()">SIGN UP</button>
+      <div class="error-msg" id="signupError"></div>
+      <div class="or-row">or continue with</div>
+      <div class="social-row">
+        <button class="social-icon"><i class="fab fa-google"></i></button>
+        <button class="social-icon"><i class="fab fa-facebook-f"></i></button>
+        <button class="social-icon"><i class="fab fa-apple"></i></button>
+        <button class="social-icon"><i class="fas fa-mobile-alt"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function switchTab(tab) {
+    const tl = document.getElementById('tabLogin');
+    const ts = document.getElementById('tabSignup');
+    const pl = document.getElementById('panelLogin');
+    const ps = document.getElementById('panelSignup');
+    if (tab === 'login') {
+      tl.className = 'tab active-login'; ts.className = 'tab';
+      pl.className = 'panel active'; ps.className = 'panel';
+    } else {
+      ts.className = 'tab active-signup'; tl.className = 'tab';
+      ps.className = 'panel active'; pl.className = 'panel';
+    }
+  }
+
+  function doLogin() {
+    const username = document.getElementById('loginUser').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    const errEl = document.getElementById('loginError');
+    if (!username || !pass) { errEl.textContent = 'Please fill in all fields.'; return; }
+    const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
+    const user = Object.values(users).find(u => (u.username === username || u.email === username) && u.password === pass);
+    if (!user) { errEl.textContent = 'Invalid username or password.'; return; }
+    localStorage.setItem('brainory_currentUser', user.email);
+    window.location.href = 'dashboard.html';
+  }
+
+  function doSignup() {
+    const username = document.getElementById('signupUser').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const pass = document.getElementById('signupPass').value;
+    const confirm = document.getElementById('signupConfirm').value;
+    const errEl = document.getElementById('signupError');
+    if (!username || !email || !pass) { errEl.textContent = 'All fields are required.'; return; }
+    if (pass !== confirm) { errEl.textContent = 'Passwords do not match.'; return; }
+    const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
+    if (users[email]) { errEl.textContent = 'Email already registered.'; return; }
+    users[email] = { username, email, password: pass };
+    localStorage.setItem('brainory_users', JSON.stringify(users));
+    errEl.style.color = '#10b981';
+    errEl.textContent = 'Account created! Redirecting...';
+    localStorage.setItem('brainory_currentUser', email);
+    setTimeout(() => window.location.href = 'dashboard.html', 800);
+  }
+</script>
+</body>
+</html>
