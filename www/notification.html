@@ -10,7 +10,7 @@
   body {
     display: flex; justify-content: center; align-items: center;
     min-height: 100vh; background: #eef2f5;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   .phone {
     width: 390px; height: 844px;
@@ -18,120 +18,151 @@
     display: flex; flex-direction: column;
     border-radius: 44px;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-    overflow: hidden; position: relative;
+    overflow: hidden;
+    position: relative;
   }
-  .drawer-overlay {
-    position: absolute; inset: 0; z-index: 100;
-    background: rgba(0,0,0,0.4);
-    display: none; border-radius: 44px;
-  }
-  .drawer-overlay.open { display: block; }
-  .drawer {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 280px; background: #fff;
-    border-radius: 0 24px 24px 0;
-    padding: 48px 0 32px;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    display: flex; flex-direction: column;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-    z-index: 101;
-  }
-  .drawer.open { transform: translateX(0); }
-  .drawer-header {
-    padding: 0 20px 24px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .drawer-avatar {
-    width: 48px; height: 48px; border-radius: 28px;
-    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 700; color: #fff;
-  }
-  .drawer-user-info { display: flex; flex-direction: column; }
-  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
-  .drawer-email { font-size: 12px; color: #64748b; }
-  .drawer-nav { flex: 1; padding: 16px 0; }
-  .drawer-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 20px; cursor: pointer;
-    font-size: 14px; color: #334155; font-weight: 500;
-    text-decoration: none; transition: all 0.2s;
-  }
-  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
-  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
-  .drawer-logout {
-    margin: 16px 20px;
-    background: #fee2e2; border: none; border-radius: 40px;
-    padding: 12px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 14px; font-weight: 600; color: #dc2626;
-    transition: 0.2s;
-  }
+  /* HEADER - same as profile/archive/settings */
   .header-gradient {
     background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
-    padding: 28px 20px 50px;
+    padding: 24px 20px 35px;
     position: relative;
   }
   .top-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
   }
-  .menu-btn {
-    background: none; border: none; cursor: pointer;
-    font-size: 22px; color: #1a1a1a; padding: 4px;
+  .back-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    color: #1a1a2e;
+    transition: 0.2s;
   }
   .header-right {
-    display: flex; align-items: center; gap: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
   }
-  .search-btn {
-    background: rgba(255,255,255,0.6); border: none;
-    width: 36px; height: 36px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer;
+  .notif-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    color: #1a1a2e;
   }
   .profile-pic {
-    width: 40px; height: 40px; border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     background: linear-gradient(135deg, #8B6B5B, #C49880);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; color: #fff; font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
     cursor: pointer;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+  .profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .page-title {
-    font-size: 26px; font-weight: 800;
-    color: #1a1a2e; margin-top: 8px;
-    font-style: italic; font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a2e;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: 1px;
+    margin-top: 4px;
   }
-  /* SEARCH MODAL */
-  .search-modal {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5); z-index: 200;
-    display: none; align-items: center; justify-content: center;
+  /* Profile dropdown */
+  .profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 240px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
   }
-  .search-modal.open { display: flex; }
-  .search-modal-content {
-    background: white; width: 320px; border-radius: 28px;
-    padding: 20px; max-height: 80vh; overflow-y: auto;
+  .profile-dropdown.open { display: block; }
+  .dropdown-user {
+    padding: 16px;
     text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
-  .search-modal-content input {
-    width: 100%; padding: 12px; border-radius: 40px;
-    border: 1px solid #e2e8f0; margin-bottom: 16px;
+  .dropdown-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
   }
-  .search-result-item {
-    padding: 12px; border-bottom: 1px solid #f1f5f9;
-    text-align: left; font-size: 14px;
+  .dropdown-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
-  .btn-cancel {
-    background: #f1f5f9; border: none;
-    padding: 10px; border-radius: 40px; width: 100%;
-    font-weight: 600; cursor: pointer;
+  .dropdown-name { font-size: 16px; font-weight: 700; color: #0f172a; }
+  .dropdown-email { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #1e293b;
+    cursor: pointer;
+    text-decoration: none;
   }
+  .dropdown-item:hover { background: #f1f5f9; }
+  .dropdown-item i { width: 20px; color: #3b82f6; }
+  .dropdown-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
+  .dropdown-logout { color: #dc2626; }
+  .dropdown-logout i { color: #dc2626; }
   /* MAIN CONTENT */
   .content {
-    flex: 1; overflow-y: auto; padding: 16px 16px 40px;
-    margin-top: -36px; position: relative; z-index: 2;
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 30px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
   }
   .content::-webkit-scrollbar { display: none; }
   /* chips */
@@ -196,53 +227,31 @@
 </head>
 <body>
 <div class="phone">
-  <!-- Drawer -->
-  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
-    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
-      <div class="drawer-header">
-        <div class="drawer-avatar" id="drawerAvatar">U</div>
-        <div class="drawer-user-info">
-          <span class="drawer-username" id="drawerUsername">User</span>
-          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
-        </div>
-      </div>
-      <nav class="drawer-nav">
-        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
-        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
-        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
-        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
-        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
-        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
-        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
-        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
-        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quiz</a>
-      </nav>
-      <button class="drawer-logout" onclick="window.location.href='logout.html'"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-  </div>
-
-  <!-- Search Modal -->
-  <div class="search-modal" id="searchModal">
-    <div class="search-modal-content">
-      <input type="text" id="searchInput" placeholder="Search notifications...">
-      <div id="searchResults" style="max-height: 250px; overflow-y: auto;"></div>
-      <button class="btn-cancel" onclick="closeSearch()">Close</button>
-    </div>
-  </div>
-
-  <!-- Header -->
   <div class="header-gradient">
     <div class="top-bar">
-      <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+      <button class="back-btn" onclick="window.location.href='dashboard.html'"><i class="fas fa-arrow-left"></i></button>
       <div class="header-right">
-        <button class="search-btn" id="searchButton"><i class="fas fa-search"></i></button>
-        <div class="profile-pic" id="profilePic" onclick="window.location.href='profile.html'">U</div>
+        <button class="notif-btn" onclick="window.location.href='notification.html'"><i class="fas fa-bell"></i></button>
+        <div class="profile-pic" id="profilePic" onclick="toggleDropdown()"></div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-user" id="dropdownUserInfo">
+            <div class="dropdown-avatar" id="dropdownAvatar"></div>
+            <div class="dropdown-name" id="dropdownName">User</div>
+            <div class="dropdown-email" id="dropdownEmail">user@example.com</div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="quiz.html"><i class="fas fa-brain"></i> Quiz</a>
+          <a class="dropdown-item" href="archive.html"><i class="fas fa-archive"></i> Archive</a>
+          <a class="dropdown-item" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+          <a class="dropdown-item" href="about.html"><i class="fas fa-info-circle"></i> About</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item dropdown-logout" id="dropdownLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
       </div>
     </div>
     <div class="page-title">Notifications</div>
   </div>
 
-  <!-- Content -->
   <div class="content">
     <div class="chips">
       <button class="chip on" onclick="filter('all',this)">All</button>
@@ -256,11 +265,50 @@
 </div>
 
 <script>
+  // ---------- AUTH & DATA ----------
   const email = localStorage.getItem('brainory_currentUser');
   if (!email) window.location.href = 'login.html';
   const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
   const user = users[email] || { username: email.split('@')[0], email };
 
+  // Helper: set profile picture (avatar or initials)
+  function setProfilePicture(element, user) {
+    if (!element) return;
+    if (user.avatar) {
+      element.innerHTML = `<img src="${user.avatar}" alt="avatar">`;
+      element.style.background = 'none';
+    } else {
+      const initial = (user.username || user.email).charAt(0).toUpperCase();
+      element.innerHTML = initial;
+      element.style.background = 'linear-gradient(135deg, #8B6B5B, #C49880)';
+    }
+  }
+
+  // Profile dropdown
+  const profilePic = document.getElementById('profilePic');
+  const profileDropdown = document.getElementById('profileDropdown');
+  const dropdownAvatar = document.getElementById('dropdownAvatar');
+  function toggleDropdown(e) {
+    e.stopPropagation();
+    profileDropdown.classList.toggle('open');
+  }
+  profilePic.addEventListener('click', toggleDropdown);
+  document.addEventListener('click', function(e) {
+    if (!profilePic.contains(e.target) && !profileDropdown.contains(e.target)) {
+      profileDropdown.classList.remove('open');
+    }
+  });
+  setProfilePicture(profilePic, user);
+  setProfilePicture(dropdownAvatar, user);
+  document.getElementById('dropdownName').innerHTML = user.username || email.split('@')[0];
+  document.getElementById('dropdownEmail').innerHTML = email;
+  document.getElementById('dropdownUserInfo').onclick = () => window.location.href = 'profile.html';
+  document.getElementById('dropdownLogoutBtn').onclick = () => {
+    localStorage.removeItem('brainory_currentUser');
+    window.location.href = 'login.html';
+  };
+
+  // ---------- Notifications data ----------
   const NOTIFS = [
     { type:'study',    read:false, icon:'📚', ic:'ic-blue',
       title:'Study Session Complete!',
@@ -324,31 +372,6 @@
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
   }
 
-  function openSearch() {
-    document.getElementById('searchModal').classList.add('open');
-    document.getElementById('searchInput').focus();
-  }
-  function closeSearch() {
-    document.getElementById('searchModal').classList.remove('open');
-    document.getElementById('searchResults').innerHTML = '';
-    document.getElementById('searchInput').value = '';
-  }
-  document.getElementById('searchButton').onclick = openSearch;
-  document.getElementById('searchInput').addEventListener('input', function(e) {
-    const query = e.target.value.toLowerCase().trim();
-    const resultsDiv = document.getElementById('searchResults');
-    if (!query) { resultsDiv.innerHTML = '<div style="padding:10px;">Type to search notifications...</div>'; return; }
-    const matches = NOTIFS.filter(n => n.title.toLowerCase().includes(query) || n.desc.toLowerCase().includes(query));
-    if (matches.length === 0) resultsDiv.innerHTML = '<div style="padding:10px;">No matching notifications.</div>';
-    else resultsDiv.innerHTML = matches.map(n => `
-      <div class="search-result-item">
-        <strong>${escapeHtml(n.title)}</strong><br>
-        <span style="font-size:12px; color:#666;">${escapeHtml(n.desc)}</span><br>
-        <span style="font-size:10px; color:#aaa;">${n.time}</span>
-      </div>
-    `).join('');
-  });
-
   function filter(type, btn) {
     currentFilter = type;
     document.querySelectorAll('.chip').forEach(chip => chip.className = 'chip off');
@@ -358,22 +381,7 @@
     render(type);
   }
 
-  const initial = (user.username || email).charAt(0).toUpperCase();
-  document.getElementById('drawerAvatar').innerHTML = initial;
-  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
-  document.getElementById('drawerEmail').innerHTML = email;
-  document.getElementById('profilePic').innerHTML = initial;
-
-  function openDrawer() {
-    document.getElementById('drawerOverlay').classList.add('open');
-    document.getElementById('drawer').classList.add('open');
-  }
-  function closeDrawer() {
-    document.getElementById('drawerOverlay').classList.remove('open');
-    document.getElementById('drawer').classList.remove('open');
-  }
-  window.openDrawer = openDrawer;
-  window.closeDrawer = closeDrawer;
+  // Make filter available globally for inline onclick
   window.filter = filter;
 
   render('all');
