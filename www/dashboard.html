@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Brainory - Lessons</title>
+<title>Brainory - Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -22,10 +23,10 @@
     overflow: hidden;
     position: relative;
   }
-  /* HEADER */
+  /* HEADER GRADIENT */
   .header-gradient {
     background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
-    padding: 24px 20px 35px;
+    padding: 24px 20px 70px;
     position: relative;
   }
   .top-bar {
@@ -34,14 +35,19 @@
     justify-content: space-between;
     margin-bottom: 16px;
   }
-  .page-title {
-    font-size: 22px;
-    font-weight: 800;
-    color: #1a1a2e;
-    font-style: italic;
-    font-family: Georgia, 'Times New Roman', serif;
-    letter-spacing: 1px;
+  .date-display {
+    text-align: left;
     margin-top: 4px;
+  }
+  .day-name {
+    font-size: 22px; font-weight: 800;
+    color: #1a1a2e; font-style: italic;
+    letter-spacing: 1px;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+  .full-date {
+    font-size: 13px; color: #444; margin-top: 2px;
+    font-family: 'Inter', sans-serif;
   }
   .header-right {
     display: flex;
@@ -56,12 +62,10 @@
     height: 36px;
     border-radius: 50%;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center; justify-content: center;
     font-size: 16px;
     cursor: pointer;
     color: #1a1a2e;
-    margin-top: 4px;
   }
   .profile-pic {
     width: 40px;
@@ -69,13 +73,11 @@
     border-radius: 50%;
     background: linear-gradient(135deg, #8B6B5B, #C49880);
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center; justify-content: center;
     font-size: 16px;
     color: #fff;
     font-weight: 700;
     cursor: pointer;
-    margin-top: 4px;
     overflow: hidden;
     background-size: cover;
     background-position: center;
@@ -84,55 +86,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-  /* Search row */
-  .search-row {
-    margin-top: 8px;
-  }
-  .search-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 40px;
-    padding: 4px;
-    backdrop-filter: blur(4px);
-    width: fit-content;
-  }
-  .search-icon-btn {
-    background: white;
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    color: #3b82f6;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
-  .search-input-container {
-    display: flex;
-    align-items: center;
-    background: white;
-    border-radius: 40px;
-    overflow: hidden;
-  }
-  .search-input-container input {
-    border: none;
-    padding: 8px 12px;
-    font-size: 14px;
-    width: 180px;
-    outline: none;
-  }
-  .search-close-btn {
-    background: none;
-    border: none;
-    padding: 0 12px;
-    cursor: pointer;
-    color: #94a3b8;
   }
   /* Profile dropdown */
   .profile-dropdown {
@@ -143,16 +96,19 @@
     background: white;
     border-radius: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    z-index: 1000;
+    z-index: 150;
     display: none;
     overflow: hidden;
   }
-  .profile-dropdown.open { display: block; }
+  .profile-dropdown.open {
+    display: block;
+  }
   .dropdown-user {
     padding: 16px;
     text-align: center;
     border-bottom: 1px solid #e2e8f0;
     cursor: pointer;
+    transition: background 0.2s;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -194,167 +150,157 @@
     font-size: 14px;
     color: #1e293b;
     cursor: pointer;
+    transition: background 0.2s;
     text-decoration: none;
   }
-  .dropdown-item:hover { background: #f1f5f9; }
-  .dropdown-item i { width: 20px; color: #3b82f6; }
-  .dropdown-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
-  .dropdown-logout { color: #dc2626; }
-  .dropdown-logout i { color: #dc2626; }
-  /* status message */
-  .save-status {
-    font-size: 12px;
-    color: #666;
-    text-align: center;
-    padding: 4px 20px;
-    min-height: 20px;
-    background: #f8fafc;
-    position: relative;
-    z-index: 2;
+  .dropdown-item:hover {
+    background: #f1f5f9;
   }
-  /* MAIN CONTENT */
+  .dropdown-item i {
+    width: 20px;
+    font-size: 16px;
+    color: #3b82f6;
+  }
+  .dropdown-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 4px 0;
+  }
+  .dropdown-logout {
+    color: #dc2626;
+  }
+  .dropdown-logout i {
+    color: #dc2626;
+  }
+  /* SCROLLABLE CONTENT */
   .content {
     flex: 1;
     overflow-y: auto;
-    padding: 16px 16px 85px;
-    margin-top: -30px;
+    padding: 0 16px 85px;
+    margin-top: -50px;
     position: relative;
     z-index: 2;
   }
   .content::-webkit-scrollbar { display: none; }
-  .subject-card {
+  /* CARDS */
+  .stats-card {
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(10px);
-    border-radius: 24px;
-    margin-bottom: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   }
-  .subject-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 20px;
-    cursor: pointer;
-    transition: background 0.2s;
+  .stats-row {
+    display: flex; justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
   }
-  .subject-header:active { background: rgba(0,0,0,0.05); }
-  .subject-name {
-    font-size: 18px;
-    font-weight: 700;
-    color: #0f172a;
+  .stats-label { font-size: 14px; font-weight: 600; color: #555; }
+  .stats-value { font-size: 18px; font-weight: 800; color: #0f172a; }
+  .subjects-row {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+    margin-top: 12px;
   }
-  .subject-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  .subj-label { font-size: 13px; font-weight: 600; color: #64748b; }
+  .subj-tag {
+    background: #eef2ff; border-radius: 30px;
+    padding: 6px 14px; font-size: 12px;
+    color: #3b82f6; font-weight: 600;
   }
-  .delete-subject-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #94a3b8;
-    padding: 4px;
-    transition: color 0.2s;
+  .add-subject {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none; border: 1px dashed #cbd5e1;
+    border-radius: 30px; padding: 6px 14px;
+    font-size: 12px; color: #64748b; cursor: pointer;
   }
-  .delete-subject-btn:hover { color: #ef4444; }
-  .subject-icon {
-    font-size: 20px;
-    color: #64748b;
-    transition: transform 0.3s;
+  .graph-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
   }
-  .subject-icon.rotated { transform: rotate(180deg); }
-  .topics-container {
-    border-top: 1px solid #e2e8f0;
-    display: none;
+  .graph-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 12px;
   }
-  .topics-container.open { display: block; }
-  .topic-item {
-    padding: 14px 20px 14px 40px;
-    cursor: pointer;
-    border-bottom: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .section-title {
+    font-size: 14px; font-weight: 800; color: #1a1a2e;
+    letter-spacing: 0.5px; text-transform: uppercase;
   }
-  .topic-item:last-child { border-bottom: none; }
-  .topic-name {
-    font-size: 15px;
-    font-weight: 500;
-    color: #1e293b;
+  .show-graph-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: #3b82f6;
   }
-  .topic-arrow {
-    font-size: 14px;
-    color: #94a3b8;
-    transition: transform 0.3s;
+  .chart-container { height: 120px; }
+  .activity-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
   }
-  .topic-arrow.rotated { transform: rotate(180deg); }
-  .notes-container {
-    background: #f8fafc;
-    padding: 0 20px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
+  .activity-title {
+    font-size: 14px; font-weight: 800; color: #1a1a2e;
+    text-transform: uppercase; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
   }
-  .notes-container.open {
-    max-height: 500px;
-    padding: 16px 20px;
+  .activity-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid #f5f5f5;
   }
-  .notes-text {
-    font-size: 13px;
-    line-height: 1.6;
+  .activity-item:last-child { border-bottom: none; }
+  .activity-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #6B8CFF; flex-shrink: 0;
+  }
+  .activity-text { font-size: 13px; color: #1e293b; flex: 1; }
+  .activity-time { font-size: 11px; color: #94a3b8; }
+  .calendar-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px; padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .calendar-header {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 12px;
+  }
+  .cal-month {
+    font-weight: 700; color: #0f172a;
+  }
+  .cal-nav button {
+    background: #f1f5f9; border: none;
+    width: 32px; height: 32px; border-radius: 32px;
+    cursor: pointer; font-size: 14px;
+  }
+  .calendar-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 6px; text-align: center; margin-bottom: 16px;
+  }
+  .cal-weekday {
+    font-size: 11px; font-weight: 600; color: #94a3b8;
+    padding: 6px 0;
+  }
+  .cal-day {
+    font-size: 13px; font-weight: 500; padding: 8px 0;
+    border-radius: 30px; cursor: pointer;
     color: #334155;
-    white-space: pre-wrap;
   }
-  .edit-note-btn {
-    background: #e2e8f0;
-    border: none;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-left: 12px;
+  .cal-day.today {
+    background: #3b82f6; color: white;
   }
-  .empty-message {
-    text-align: center;
-    padding: 40px;
-    color: #94a3b8;
-    font-size: 14px;
+  .cal-day.has-event {
+    background: #fee2e2; color: #dc2626;
   }
-  /* Modals */
-  .edit-modal, .delete-modal {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5); z-index: 300;
-    display: none; align-items: center; justify-content: center;
+  .upcoming-list {
+    margin-top: 12px;
   }
-  .edit-modal.open, .delete-modal.open { display: flex; }
-  .edit-modal-content {
-    background: white; width: 340px; border-radius: 28px;
-    padding: 20px; max-height: 80vh; overflow-y: auto;
+  .upcoming-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0; border-top: 1px solid #f1f5f9;
   }
-  .edit-modal-content h3 { margin-bottom: 16px; color: #0f172a; }
-  .edit-modal-content input, .edit-modal-content textarea {
-    width: 100%; padding: 12px; border-radius: 40px;
-    border: 1px solid #e2e8f0; margin-bottom: 12px;
-    font-size: 14px;
-  }
-  .edit-modal-content textarea { border-radius: 20px; min-height: 150px; }
-  .edit-buttons { display: flex; gap: 12px; }
-  .edit-buttons button { flex: 1; padding: 10px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
-  .save-edit { background: #3b82f6; color: white; }
-  .cancel-edit { background: #f1f5f9; color: #334155; }
-  .delete-modal-content {
-    background: white; width: 280px; border-radius: 28px;
-    padding: 24px; text-align: center;
-  }
-  .delete-modal-content p { margin-bottom: 20px; color: #1e293b; }
-  .delete-buttons { display: flex; gap: 12px; }
-  .delete-buttons button { flex: 1; padding: 10px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
-  .delete-confirm { background: #ef4444; color: white; }
-  .delete-cancel { background: #f1f5f9; color: #334155; }
-  /* BOTTOM NAV */
+  .upcoming-time { font-size: 12px; font-weight: 600; color: #3b82f6; width: 60px; }
+  .upcoming-text { font-size: 13px; color: #1e293b; flex: 1; }
+  /* BOTTOM NAV – FIXED */
   .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -384,6 +330,7 @@
     border-radius: 40px;
     color: #94a3b8;
     font-size: 22px;
+    transition: all 0.2s;
     text-decoration: none;
   }
   .nav-btn.active { color: #3b82f6; }
@@ -395,13 +342,13 @@
     background: #3b82f6;
     border: none;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center; justify-content: center;
     font-size: 24px;
     cursor: pointer;
     box-shadow: 0 6px 12px rgba(59,130,246,0.3);
     color: white;
     text-decoration: none;
+    transition: transform 0.2s;
   }
   .nav-center-btn:active { transform: scale(0.95); }
 </style>
@@ -410,7 +357,10 @@
 <div class="phone">
   <div class="header-gradient">
     <div class="top-bar">
-      <div class="page-title">Lessons</div>
+      <div class="date-display">
+        <div class="day-name" id="dayName"></div>
+        <div class="full-date" id="fullDate"></div>
+      </div>
       <div class="header-right">
         <button class="notif-btn" onclick="window.location.href='notification.html'"><i class="fas fa-bell"></i></button>
         <div class="profile-pic" id="profilePic" onclick="toggleDropdown()"></div>
@@ -430,54 +380,62 @@
         </div>
       </div>
     </div>
-    <div class="search-row">
-      <div class="search-wrapper">
-        <button class="search-icon-btn" id="searchIconBtn"><i class="fas fa-search"></i></button>
-        <div class="search-input-container" id="searchInputContainer" style="display: none;">
-          <input type="text" id="inlineSearchInput" placeholder="Search subject or topic...">
-          <button class="search-close-btn" id="searchCloseBtn"><i class="fas fa-times"></i></button>
+  </div>
+
+  <div class="content">
+    <div class="stats-card">
+      <div class="stats-row">
+        <span class="stats-label">Today's Study</span>
+        <span class="stats-value" id="todayTime">0h 0m</span>
+      </div>
+      <div class="subjects-row">
+        <span class="subj-label">Subjects</span>
+        <div id="subjectTags"></div>
+        <div class="add-subject" id="addSubjectBtn"><i class="fas fa-plus"></i> Add</div>
+      </div>
+    </div>
+
+    <div class="graph-card">
+      <div class="graph-header">
+        <span class="section-title"><i class="fas fa-chart-simple"></i> Study Trend</span>
+        <button class="show-graph-btn" id="toggleGraphBtn">Hide Graph</button>
+      </div>
+      <div class="chart-container" id="chartContainer">
+        <canvas id="studyChart"></canvas>
+      </div>
+    </div>
+
+    <div class="calendar-card">
+      <div class="calendar-header">
+        <span class="cal-month" id="calMonthYear"></span>
+        <div class="cal-nav">
+          <button id="prevMonthBtn"><i class="fas fa-chevron-left"></i></button>
+          <button id="nextMonthBtn"><i class="fas fa-chevron-right"></i></button>
         </div>
       </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+      <div class="upcoming-list" id="upcomingList">
+        <div class="upcoming-item"><span class="upcoming-time">—</span><span class="upcoming-text">No upcoming schedules</span></div>
+      </div>
+    </div>
+
+    <div class="activity-card">
+      <div class="activity-title"><i class="fas fa-history"></i> Recent Activity</div>
+      <div id="activityList"></div>
     </div>
   </div>
 
-  <div class="save-status" id="saveStatus"></div>
-
-  <div class="content" id="lessonsContent"></div>
-
   <div class="bottom-nav">
-    <a class="nav-btn" href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
-    <a class="nav-btn active" href="subject.html"><i class="fas fa-book"></i><span>Lessons</span></a>
+    <a class="nav-btn active" href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a class="nav-btn" href="subject.html"><i class="fas fa-book"></i><span>Lessons</span></a>
     <a class="nav-center-btn" href="notes.html"><i class="fas fa-plus"></i></a>
     <a class="nav-btn" href="progress.html"><i class="fas fa-chart-line"></i><span>Graphs</span></a>
     <a class="nav-btn" href="schedule.html"><i class="fas fa-calendar-alt"></i><span>Calendar</span></a>
   </div>
-
-  <div class="edit-modal" id="editModal">
-    <div class="edit-modal-content">
-      <h3>Edit Lesson</h3>
-      <input type="text" id="editSubject" placeholder="Subject">
-      <input type="text" id="editTopic" placeholder="Topic">
-      <textarea id="editContent" placeholder="Content..."></textarea>
-      <div class="edit-buttons">
-        <button class="save-edit" id="saveEditBtn">Save</button>
-        <button class="cancel-edit" id="cancelEditBtn">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="delete-modal" id="deleteModal">
-    <div class="delete-modal-content">
-      <p>Move this subject and all its lessons to Archive?</p>
-      <div class="delete-buttons">
-        <button class="delete-cancel" id="deleteCancelBtn">Cancel</button>
-        <button class="delete-confirm" id="deleteConfirmBtn">Archive</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
+  // ---------- AUTH & DATA ----------
   const email = localStorage.getItem('brainory_currentUser');
   if (!email) window.location.href = 'login.html';
   const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
@@ -485,10 +443,11 @@
   const storageKey = 'brainory_' + email;
   let appData = JSON.parse(localStorage.getItem(storageKey) || '{}');
   if (!appData.notes) appData.notes = [];
-  if (!appData.archived) appData.archived = [];
+  if (!appData.activities) appData.activities = [];
+  if (!appData.schedules) appData.schedules = [];
 
   // Helper: set profile picture (avatar or initials)
-  function setProfilePicture(element, user) {
+  function setProfilePicture(element, user, size = '40px') {
     if (!element) return;
     if (user.avatar) {
       element.innerHTML = `<img src="${user.avatar}" alt="avatar">`;
@@ -500,236 +459,194 @@
     }
   }
 
-  let currentEditNoteId = null;
-  let pendingDeleteSubject = null;
-  let currentSearchQuery = "";
-
-  function showStatus(msg) {
-    const statusDiv = document.getElementById('saveStatus');
-    statusDiv.textContent = msg;
-    setTimeout(() => { if (statusDiv.textContent === msg) statusDiv.textContent = ''; }, 2000);
-  }
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-  }
-
-  function getFilteredNotes() {
-    if (!currentSearchQuery.trim()) return appData.notes;
-    const q = currentSearchQuery.trim().toLowerCase();
-    return appData.notes.filter(note => 
-      (note.subject && note.subject.toLowerCase().includes(q)) || 
-      (note.topic && note.topic.toLowerCase().includes(q))
-    );
-  }
-
-  function renderSubjects() {
-    const container = document.getElementById('lessonsContent');
-    container.innerHTML = '';
-    const filteredNotes = getFilteredNotes();
-    if (filteredNotes.length === 0 && currentSearchQuery.trim() !== "") {
-      container.innerHTML = `<div class="empty-message"><i class="fas fa-search"></i> No lessons match "<span style="font-weight:600;">${escapeHtml(currentSearchQuery)}</span>"</div>`;
-      return;
-    }
-    if (filteredNotes.length === 0) {
-      container.innerHTML = '<div class="empty-message"><i class="fas fa-book-open"></i> No lessons yet. Go to Notes to create your first lesson note.</div>';
-      return;
-    }
-    const grouped = {};
-    filteredNotes.forEach(note => {
-      if (!grouped[note.subject]) grouped[note.subject] = [];
-      grouped[note.subject].push(note);
+  // ---------- Helper: get unique subjects from notes ----------
+  function getSubjectsFromNotes() {
+    const subjectsSet = new Set();
+    appData.notes.forEach(note => {
+      if (note.subject && note.subject.trim()) subjectsSet.add(note.subject.trim());
     });
-    const subjects = Object.keys(grouped).sort();
-    subjects.forEach(subject => {
-      const notesArray = grouped[subject];
-      const subjectDiv = document.createElement('div');
-      subjectDiv.className = 'subject-card';
-      const headerDiv = document.createElement('div');
-      headerDiv.className = 'subject-header';
-      headerDiv.innerHTML = `
-        <span class="subject-name">${escapeHtml(subject)}</span>
-        <div class="subject-actions">
-          <button class="delete-subject-btn" data-subject="${escapeHtml(subject)}"><i class="fas fa-trash-alt"></i></button>
-          <i class="fas fa-chevron-down subject-icon"></i>
-        </div>
-      `;
-      const deleteBtn = headerDiv.querySelector('.delete-subject-btn');
-      deleteBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        pendingDeleteSubject = subject;
-        document.getElementById('deleteModal').classList.add('open');
+    return Array.from(subjectsSet).sort();
+  }
+
+  // ---------- Dashboard UI ----------
+  function updateDashboard() {
+    const subjects = getSubjectsFromNotes();
+    const tagsContainer = document.getElementById('subjectTags');
+    tagsContainer.innerHTML = '';
+    if (subjects.length === 0) {
+      tagsContainer.innerHTML = '<span class="subj-tag" style="background:#f1f5f9; color:#94a3b8;">No subjects yet → Add a note</span>';
+    } else {
+      subjects.forEach(s => {
+        const tag = document.createElement('span');
+        tag.className = 'subj-tag';
+        tag.textContent = s;
+        tagsContainer.appendChild(tag);
       });
-      const topicsContainer = document.createElement('div');
-      topicsContainer.className = 'topics-container';
-      notesArray.forEach((note) => {
-        const topicDiv = document.createElement('div');
-        topicDiv.className = 'topic-item';
-        const displayTopic = note.topic || 'Untitled Lesson';
-        topicDiv.innerHTML = `
-          <span class="topic-name">${escapeHtml(displayTopic)}</span>
-          <div>
-            <button class="edit-note-btn" data-id="${note.id}">Edit</button>
-            <i class="fas fa-chevron-down topic-arrow"></i>
-          </div>
-        `;
-        const notesContainer = document.createElement('div');
-        notesContainer.className = 'notes-container';
-        const contentHtml = note.content ? escapeHtml(note.content).replace(/\n/g, '<br>') : '<em>No content</em>';
-        notesContainer.innerHTML = `<div class="notes-text">${contentHtml}</div>`;
-        const arrowSpan = topicDiv.querySelector('.topic-arrow');
-        topicDiv.addEventListener('click', (e) => {
-          if (e.target.classList.contains('edit-note-btn')) return;
-          const isOpen = notesContainer.classList.contains('open');
-          if (isOpen) {
-            notesContainer.classList.remove('open');
-            arrowSpan.classList.remove('rotated');
-          } else {
-            notesContainer.classList.add('open');
-            arrowSpan.classList.add('rotated');
-          }
-        });
-        const editBtn = topicDiv.querySelector('.edit-note-btn');
-        editBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          openEditModal(note);
-        });
-        topicDiv.appendChild(notesContainer);
-        topicsContainer.appendChild(topicDiv);
-      });
-      let isSubjectOpen = false;
-      headerDiv.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-subject-btn')) return;
-        const arrow = headerDiv.querySelector('.subject-icon');
-        if (isSubjectOpen) {
-          topicsContainer.classList.remove('open');
-          arrow.classList.remove('rotated');
-        } else {
-          topicsContainer.classList.add('open');
-          arrow.classList.add('rotated');
+    }
+
+    let totalMins = 0;
+    const todayStr = new Date().toISOString().slice(0,10);
+    appData.activities.forEach(a => {
+      if (a.date === todayStr) {
+        const match = a.duration.match(/(\d+)h\s*(\d+)m/) || a.duration.match(/(\d+)h/);
+        if (match) {
+          if (match[2]) totalMins += parseInt(match[1])*60 + parseInt(match[2]);
+          else totalMins += parseInt(match[1])*60;
         }
-        isSubjectOpen = !isSubjectOpen;
+      }
+    });
+    const h = Math.floor(totalMins/60), m = totalMins % 60;
+    document.getElementById('todayTime').innerHTML = `${h}h ${m}m`;
+
+    const actContainer = document.getElementById('activityList');
+    actContainer.innerHTML = '';
+    appData.activities.slice(0,5).forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'activity-item';
+      div.innerHTML = `<div class="activity-dot"></div><div class="activity-text">${a.subject} (${a.duration})</div><div class="activity-time">${a.time}</div>`;
+      actContainer.appendChild(div);
+    });
+  }
+
+  // ---------- Mini Calendar ----------
+  let currentCalDate = new Date();
+  function renderMiniCalendar() {
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const today = new Date();
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('calMonthYear').innerHTML = `${monthNames[month]} ${year}`;
+
+    const grid = document.getElementById('calendarGrid');
+    grid.innerHTML = '';
+    const weekdays = ['S','M','T','W','T','F','S'];
+    weekdays.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'cal-weekday';
+      div.textContent = d;
+      grid.appendChild(div);
+    });
+    for (let i = 0; i < firstDay; i++) {
+      const empty = document.createElement('div');
+      empty.className = 'cal-day';
+      empty.innerHTML = '';
+      grid.appendChild(empty);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.className = 'cal-day';
+      dayDiv.textContent = d;
+      const isToday = (d === today.getDate() && month === today.getMonth() && year === today.getFullYear());
+      if (isToday) dayDiv.classList.add('today');
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const hasEvent = appData.schedules && appData.schedules.some(s => s.date === dateStr);
+      if (hasEvent) dayDiv.classList.add('has-event');
+      dayDiv.onclick = () => alert(`Selected ${dateStr}\nYou can add schedule on Calendar page.`);
+      grid.appendChild(dayDiv);
+    }
+
+    const upcomingDiv = document.getElementById('upcomingList');
+    upcomingDiv.innerHTML = '';
+    const todayStr = new Date().toISOString().slice(0,10);
+    const upcoming = (appData.schedules || []).filter(s => s.date >= todayStr).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+    if (upcoming.length === 0) {
+      upcomingDiv.innerHTML = '<div class="upcoming-item"><span class="upcoming-time">—</span><span class="upcoming-text">No upcoming schedules</span></div>';
+    } else {
+      upcoming.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'upcoming-item';
+        item.innerHTML = `<span class="upcoming-time">${s.date.slice(5)}</span><span class="upcoming-text">${s.title || s.text}</span>`;
+        upcomingDiv.appendChild(item);
       });
-      subjectDiv.appendChild(headerDiv);
-      subjectDiv.appendChild(topicsContainer);
-      container.appendChild(subjectDiv);
+    }
+  }
+
+  // ---------- Chart ----------
+  let chart;
+  const ctx = document.getElementById('studyChart').getContext('2d');
+  function initChart() {
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          data: [2.5, 4, 3, 5, 3.5, 4.5, 3],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { display: false }, tooltip: { enabled: true } },
+        scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { display: false } }
+      }
     });
   }
+  let chartVisible = true;
+  document.getElementById('toggleGraphBtn').onclick = () => {
+    const container = document.getElementById('chartContainer');
+    const btn = document.getElementById('toggleGraphBtn');
+    if (chartVisible) {
+      container.style.display = 'none';
+      btn.innerHTML = 'Show Graph';
+    } else {
+      container.style.display = 'block';
+      btn.innerHTML = 'Hide Graph';
+      setTimeout(() => chart.resize(), 50);
+    }
+    chartVisible = !chartVisible;
+  };
 
-  function archiveSubject(subjectName) {
-    const notesToArchive = appData.notes.filter(n => n.subject === subjectName);
-    if (notesToArchive.length === 0) {
-      showStatus(`No notes found for "${subjectName}".`);
-      return;
-    }
-    appData.archived.unshift({
-      id: Date.now(),
-      subject: subjectName,
-      notes: notesToArchive,
-      archivedDate: new Date().toLocaleString()
-    });
-    appData.notes = appData.notes.filter(n => n.subject !== subjectName);
-    localStorage.setItem(storageKey, JSON.stringify(appData));
-    renderSubjects();
-    showStatus(`"${subjectName}" moved to Archive.`);
-  }
+  // Add subject button -> notes page
+  document.getElementById('addSubjectBtn').onclick = () => {
+    window.location.href = 'notes.html';
+  };
 
-  function openEditModal(note) {
-    currentEditNoteId = note.id;
-    document.getElementById('editSubject').value = note.subject || '';
-    document.getElementById('editTopic').value = note.topic || '';
-    document.getElementById('editContent').value = note.content || '';
-    document.getElementById('editModal').classList.add('open');
-  }
-  function closeEditModal() {
-    document.getElementById('editModal').classList.remove('open');
-    currentEditNoteId = null;
-  }
-  function saveEdit() {
-    if (!currentEditNoteId) return;
-    const noteIndex = appData.notes.findIndex(n => n.id === currentEditNoteId);
-    if (noteIndex !== -1) {
-      appData.notes[noteIndex].subject = document.getElementById('editSubject').value.trim() || 'Untitled';
-      appData.notes[noteIndex].topic = document.getElementById('editTopic').value.trim() || 'Lesson';
-      appData.notes[noteIndex].content = document.getElementById('editContent').value;
-      appData.notes[noteIndex].date = new Date().toLocaleString();
-      localStorage.setItem(storageKey, JSON.stringify(appData));
-      renderSubjects();
-      showStatus('Lesson updated!');
-    }
-    closeEditModal();
-  }
-
-  // Inline search
-  const searchIconBtn = document.getElementById('searchIconBtn');
-  const searchInputContainer = document.getElementById('searchInputContainer');
-  const inlineSearchInput = document.getElementById('inlineSearchInput');
-  const searchCloseBtn = document.getElementById('searchCloseBtn');
-  function openInlineSearch() {
-    searchIconBtn.style.display = 'none';
-    searchInputContainer.style.display = 'flex';
-    inlineSearchInput.focus();
-    inlineSearchInput.value = currentSearchQuery;
-  }
-  function closeInlineSearch(resetQuery = true) {
-    searchIconBtn.style.display = 'flex';
-    searchInputContainer.style.display = 'none';
-    if (resetQuery) {
-      currentSearchQuery = "";
-      inlineSearchInput.value = "";
-      renderSubjects();
-    }
-  }
-  searchIconBtn.addEventListener('click', openInlineSearch);
-  searchCloseBtn.addEventListener('click', () => closeInlineSearch(true));
-  inlineSearchInput.addEventListener('input', (e) => {
-    currentSearchQuery = e.target.value;
-    renderSubjects();
-  });
-  document.addEventListener('click', function(e) {
-    const wrapper = document.querySelector('.search-wrapper');
-    if (searchInputContainer.style.display === 'flex' && wrapper && !wrapper.contains(e.target)) {
-      if (currentSearchQuery.trim() === "") closeInlineSearch(true);
-    }
-  });
-
-  // Profile dropdown with avatar support
-  const profilePic = document.getElementById('profilePic');
-  const profileDropdown = document.getElementById('profileDropdown');
-  const dropdownAvatar = document.getElementById('dropdownAvatar');
-  function toggleDropdown(e) {
-    e.stopPropagation();
-    profileDropdown.classList.toggle('open');
-  }
-  profilePic.addEventListener('click', toggleDropdown);
-  document.addEventListener('click', function(e) {
-    if (!profilePic.contains(e.target) && !profileDropdown.contains(e.target)) {
-      profileDropdown.classList.remove('open');
-    }
-  });
-  // Set profile picture for header and dropdown
-  setProfilePicture(profilePic, user);
-  setProfilePicture(dropdownAvatar, user);
+  // ---------- User info, avatar & date ----------
+  setProfilePicture(document.getElementById('profilePic'), user);
+  setProfilePicture(document.getElementById('dropdownAvatar'), user);
   document.getElementById('dropdownName').innerHTML = user.username || email.split('@')[0];
   document.getElementById('dropdownEmail').innerHTML = email;
-  document.getElementById('dropdownUserInfo').onclick = () => window.location.href = 'profile.html';
 
-  document.getElementById('deleteConfirmBtn').onclick = () => {
-    if (pendingDeleteSubject) {
-      archiveSubject(pendingDeleteSubject);
-      pendingDeleteSubject = null;
+  // Dropdown user info click -> profile page
+  document.getElementById('dropdownUserInfo').onclick = () => {
+    window.location.href = 'profile.html';
+  };
+
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dayName').innerHTML = days[now.getDay()];
+  document.getElementById('fullDate').innerHTML = `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+
+  // Calendar navigation
+  document.getElementById('prevMonthBtn').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth()-1); renderMiniCalendar(); };
+  document.getElementById('nextMonthBtn').onclick = () => { currentCalDate.setMonth(currentCalDate.getMonth()+1); renderMiniCalendar(); };
+
+  // Initialize
+  updateDashboard();
+  initChart();
+  renderMiniCalendar();
+
+  // ---------- Profile dropdown toggle ----------
+  function toggleDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.classList.toggle('open');
+  }
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('profileDropdown');
+    const profilePic = document.getElementById('profilePic');
+    if (!profilePic.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.classList.remove('open');
     }
-    document.getElementById('deleteModal').classList.remove('open');
-  };
-  document.getElementById('deleteCancelBtn').onclick = () => {
-    pendingDeleteSubject = null;
-    document.getElementById('deleteModal').classList.remove('open');
-  };
-  document.getElementById('saveEditBtn').onclick = saveEdit;
-  document.getElementById('cancelEditBtn').onclick = closeEditModal;
-
-  renderSubjects();
+  });
 </script>
 </body>
 </html>
