@@ -20,77 +20,151 @@
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
     overflow: hidden; position: relative;
   }
-  .drawer-overlay {
-    position: absolute; inset: 0; z-index: 100;
-    background: rgba(0,0,0,0.4);
-    display: none; border-radius: 44px;
+  /* HEADER - same as profile/archive/settings */
+  .header-gradient {
+    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
+    padding: 24px 20px 35px;
+    position: relative;
   }
-  .drawer-overlay.open { display: block; }
-  .drawer {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 280px; background: #fff;
-    border-radius: 0 24px 24px 0;
-    padding: 48px 0 32px;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.2,0.9,0.4,1.1);
-    display: flex; flex-direction: column;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-    z-index: 101;
-  }
-  .drawer.open { transform: translateX(0); }
-  .drawer-header {
-    padding: 0 20px 24px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .drawer-avatar {
-    width: 48px; height: 48px; border-radius: 28px;
-    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 700; color: #fff;
-  }
-  .drawer-user-info { display: flex; flex-direction: column; }
-  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
-  .drawer-email { font-size: 12px; color: #64748b; }
-  .drawer-nav { flex: 1; padding: 16px 0; }
-  .drawer-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 20px; cursor: pointer;
-    font-size: 14px; color: #334155; font-weight: 500;
-    text-decoration: none; transition: all 0.2s;
-  }
-  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
-  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
-  .drawer-logout {
-    margin: 16px 20px;
-    background: #fee2e2; border: none; border-radius: 40px;
-    padding: 12px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 14px; font-weight: 600; color: #dc2626;
-    transition: 0.2s;
-  }
-  .simple-header {
-    background: white;
-    padding: 20px 20px 16px;
-    border-bottom: 1px solid #e2e8f0;
+  .top-bar {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
   }
-  .menu-btn {
-    background: none; border: none; cursor: pointer;
-    font-size: 22px; color: #1a1a1a; padding: 4px;
-    margin-right: 16px;
+  .back-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    color: #1a1a2e;
+    transition: 0.2s;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+  }
+  .notif-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    color: #1a1a2e;
+  }
+  .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+  .profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .page-title {
-    font-size: 26px; font-weight: 800;
+    font-size: 22px;
+    font-weight: 800;
     color: #1a1a2e;
     font-style: italic;
     font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: 1px;
+    margin-top: 4px;
   }
+  /* Profile dropdown (same as other pages) */
+  .profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 240px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+  }
+  .profile-dropdown.open { display: block; }
+  .dropdown-user {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .dropdown-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+    overflow: hidden;
+  }
+  .dropdown-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .dropdown-name { font-size: 16px; font-weight: 700; color: #0f172a; }
+  .dropdown-email { font-size: 12px; color: #64748b; margin-top: 2px; }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #1e293b;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .dropdown-item:hover { background: #f1f5f9; }
+  .dropdown-item i { width: 20px; color: #3b82f6; }
+  .dropdown-divider { height: 1px; background: #e2e8f0; margin: 4px 0; }
+  .dropdown-logout { color: #dc2626; }
+  .dropdown-logout i { color: #dc2626; }
+  /* MAIN CONTENT */
   .content {
-    flex: 1; overflow-y: auto; padding: 16px 16px 30px;
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 30px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
   }
   .content::-webkit-scrollbar { display: none; }
+  /* ABOUT CARD */
   .about-card {
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(10px);
@@ -109,32 +183,28 @@
 </head>
 <body>
 <div class="phone">
-  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
-    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
-      <div class="drawer-header">
-        <div class="drawer-avatar" id="drawerAvatar">U</div>
-        <div class="drawer-user-info">
-          <span class="drawer-username" id="drawerUsername">User</span>
-          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
+  <div class="header-gradient">
+    <div class="top-bar">
+      <button class="back-btn" onclick="window.location.href='dashboard.html'"><i class="fas fa-arrow-left"></i></button>
+      <div class="header-right">
+        <button class="notif-btn" onclick="window.location.href='notification.html'"><i class="fas fa-bell"></i></button>
+        <div class="profile-pic" id="profilePic" onclick="toggleDropdown()"></div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-user" id="dropdownUserInfo">
+            <div class="dropdown-avatar" id="dropdownAvatar"></div>
+            <div class="dropdown-name" id="dropdownName">User</div>
+            <div class="dropdown-email" id="dropdownEmail">user@example.com</div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="quiz.html"><i class="fas fa-brain"></i> Quiz</a>
+          <a class="dropdown-item" href="archive.html"><i class="fas fa-archive"></i> Archive</a>
+          <a class="dropdown-item" href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+          <a class="dropdown-item" href="about.html"><i class="fas fa-info-circle"></i> About</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item dropdown-logout" id="dropdownLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </div>
-      <nav class="drawer-nav">
-        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
-        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
-        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
-        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
-        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
-        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quiz</a>
-        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
-        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
-        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
-      </nav>
-      <button class="drawer-logout" onclick="window.location.href='logout.html'"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
-  </div>
-
-  <div class="simple-header">
-    <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
     <div class="page-title">About</div>
   </div>
 
@@ -158,26 +228,53 @@
 </div>
 
 <script>
+  // ---------- AUTH & DATA ----------
   const email = localStorage.getItem('brainory_currentUser');
   if (!email) window.location.href = 'login.html';
   const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
   const user = users[email] || { username: email.split('@')[0], email };
 
-  const initial = (user.username || email).charAt(0).toUpperCase();
-  document.getElementById('drawerAvatar').innerHTML = initial;
-  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
-  document.getElementById('drawerEmail').innerHTML = email;
+  // Helper: set profile picture (avatar or initials)
+  function setProfilePicture(element, user) {
+    if (!element) return;
+    if (user.avatar) {
+      element.innerHTML = `<img src="${user.avatar}" alt="avatar">`;
+      element.style.background = 'none';
+    } else {
+      const initial = (user.username || user.email).charAt(0).toUpperCase();
+      element.innerHTML = initial;
+      element.style.background = 'linear-gradient(135deg, #8B6B5B, #C49880)';
+    }
+  }
 
-  function openDrawer() {
-    document.getElementById('drawerOverlay').classList.add('open');
-    document.getElementById('drawer').classList.add('open');
+  // ---------- Profile dropdown ----------
+  const profilePic = document.getElementById('profilePic');
+  const profileDropdown = document.getElementById('profileDropdown');
+  const dropdownAvatar = document.getElementById('dropdownAvatar');
+  function toggleDropdown(e) {
+    e.stopPropagation();
+    profileDropdown.classList.toggle('open');
   }
-  function closeDrawer() {
-    document.getElementById('drawerOverlay').classList.remove('open');
-    document.getElementById('drawer').classList.remove('open');
+  profilePic.addEventListener('click', toggleDropdown);
+  document.addEventListener('click', function(e) {
+    if (!profilePic.contains(e.target) && !profileDropdown.contains(e.target)) {
+      profileDropdown.classList.remove('open');
+    }
+  });
+  setProfilePicture(profilePic, user);
+  setProfilePicture(dropdownAvatar, user);
+  document.getElementById('dropdownName').innerHTML = user.username || email.split('@')[0];
+  document.getElementById('dropdownEmail').innerHTML = email;
+  document.getElementById('dropdownUserInfo').onclick = () => window.location.href = 'profile.html';
+
+  // ---------- Logout from dropdown ----------
+  const dropdownLogout = document.getElementById('dropdownLogoutBtn');
+  if (dropdownLogout) {
+    dropdownLogout.onclick = () => {
+      localStorage.removeItem('brainory_currentUser');
+      window.location.href = 'login.html';
+    };
   }
-  window.openDrawer = openDrawer;
-  window.closeDrawer = closeDrawer;
 </script>
 </body>
 </html>
