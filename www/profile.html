@@ -10,90 +10,80 @@
   body {
     display: flex; justify-content: center; align-items: center;
     min-height: 100vh; background: #eef2f5;
-    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   .phone {
     width: 390px; height: 844px;
     background: #f8fafc;
-    display: flex; flex-direction: column;
+    display: flex;
+    flex-direction: column;
     border-radius: 44px;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-    overflow: hidden; position: relative;
-  }
-  /* DRAWER */
-  .drawer-overlay {
-    position: absolute; inset: 0; z-index: 100;
-    background: rgba(0,0,0,0.4);
-    display: none; border-radius: 44px;
-  }
-  .drawer-overlay.open { display: block; }
-  .drawer {
-    position: absolute; left: 0; top: 0; bottom: 0;
-    width: 280px; background: #fff;
-    border-radius: 0 24px 24px 0;
-    padding: 48px 0 32px;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    display: flex; flex-direction: column;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-    z-index: 101;
-  }
-  .drawer.open { transform: translateX(0); }
-  .drawer-header {
-    padding: 0 20px 24px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex; align-items: center; gap: 12px;
-  }
-  .drawer-avatar {
-    width: 48px; height: 48px; border-radius: 28px;
-    background: linear-gradient(135deg, #6B8CFF, #A8C8E8);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; font-weight: 700; color: #fff;
-  }
-  .drawer-user-info { display: flex; flex-direction: column; }
-  .drawer-username { font-size: 15px; font-weight: 700; color: #1e293b; }
-  .drawer-email { font-size: 12px; color: #64748b; }
-  .drawer-nav { flex: 1; padding: 16px 0; }
-  .drawer-item {
-    display: flex; align-items: center; gap: 14px;
-    padding: 12px 20px; cursor: pointer;
-    font-size: 14px; color: #334155; font-weight: 500;
-    text-decoration: none; transition: all 0.2s;
-  }
-  .drawer-item:hover { background: #f1f5f9; color: #3b82f6; }
-  .drawer-item .item-icon { font-size: 18px; width: 28px; text-align: center; }
-  .drawer-logout {
-    margin: 16px 20px;
-    background: #fee2e2; border: none; border-radius: 40px;
-    padding: 12px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    font-size: 14px; font-weight: 600; color: #dc2626;
-    transition: 0.2s;
-  }
-  /* HEADER GRADIENT */
-  .header-gradient {
-    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
-    padding: 28px 20px 50px;
+    overflow: hidden;
     position: relative;
   }
-  .top-bar {
-    display: flex; align-items: center;
-    margin-bottom: 12px;
+  /* HEADER - profile specific */
+  .header-gradient {
+    background: linear-gradient(160deg, #A8C8F0 0%, #B8D8C8 50%, #D4E8A0 100%);
+    padding: 24px 20px 35px;
+    position: relative;
+    
   }
-  .menu-btn {
-    background: none; border: none; cursor: pointer;
-    font-size: 22px; color: #1a1a1a; padding: 4px;
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .back-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    color: #1a1a2e;
+    transition: 0.2s;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .notif-btn {
+    background: rgba(255,255,255,0.6);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    color: #1a1a2e;
   }
   .page-title {
-    font-size: 26px; font-weight: 800;
-    color: #1a1a2e; margin-top: 8px;
-    font-style: italic; font-family: Georgia, 'Times New Roman', serif;
-    text-align: left;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a2e;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+    letter-spacing: 1px;
+    margin-top: 4px;
   }
-  /* MAIN SCROLLABLE CONTENT */
+  /* MAIN CONTENT */
   .content {
-    flex: 1; overflow-y: auto; padding: 0 16px 80px;
-    margin-top: -36px; position: relative; z-index: 2;
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 30px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
   }
   .content::-webkit-scrollbar { display: none; }
   /* PROFILE CARD */
@@ -106,14 +96,61 @@
     text-align: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   }
-  .avatar {
-    width: 80px; height: 80px; border-radius: 50%;
-    background: linear-gradient(135deg, #8B6B5B, #C49880);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px; font-weight: 700; color: #fff;
+  .avatar-wrapper {
+    position: relative;
+    width: 100px;
     margin: 0 auto 12px;
+    cursor: pointer;
   }
-  .user-name { font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #8B6B5B, #C49880);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+    object-fit: cover;
+    transition: 0.2s;
+  }
+  .avatar-edit-icon {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    color: #3b82f6;
+    font-size: 12px;
+  }
+  .user-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .user-name {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .edit-name-btn {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+  }
   .user-email { font-size: 13px; color: #64748b; margin-top: 4px; }
   .stats-row {
     display: flex; justify-content: space-around;
@@ -131,58 +168,83 @@
     padding: 16px 20px;
     margin-bottom: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .info-left {
+    flex: 1;
   }
   .info-label {
-    font-size: 11px; font-weight: 700; letter-spacing: 1px;
-    color: #94a3b8; margin-bottom: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    margin-bottom: 6px;
     text-transform: uppercase;
   }
   .info-value {
-    font-size: 15px; font-weight: 600; color: #0f172a;
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
   }
+  .edit-info-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 8px;
+  }
+  /* MODAL */
+  .modal {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5); z-index: 300;
+    display: none; align-items: center; justify-content: center;
+  }
+  .modal.open { display: flex; }
+  .modal-content {
+    background: white; width: 300px; border-radius: 28px;
+    padding: 24px; text-align: center;
+  }
+  .modal-content h3 { margin-bottom: 16px; color: #0f172a; }
+  .modal-content input {
+    width: 100%; padding: 12px; border-radius: 40px;
+    border: 1px solid #e2e8f0; margin-bottom: 16px;
+    font-size: 14px;
+  }
+  .modal-buttons { display: flex; gap: 12px; }
+  .modal-buttons button {
+    flex: 1; padding: 10px; border-radius: 40px;
+    border: none; font-weight: 600; cursor: pointer;
+  }
+  .modal-save { background: #3b82f6; color: white; }
+  .modal-cancel { background: #f1f5f9; color: #334155; }
 </style>
 </head>
 <body>
 <div class="phone">
-  <!-- Drawer -->
-  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()">
-    <div class="drawer" id="drawer" onclick="event.stopPropagation()">
-      <div class="drawer-header">
-        <div class="drawer-avatar" id="drawerAvatar">U</div>
-        <div class="drawer-user-info">
-          <span class="drawer-username" id="drawerUsername">User</span>
-          <span class="drawer-email" id="drawerEmail">user@gmail.com</span>
-        </div>
-      </div>
-      <nav class="drawer-nav">
-        <a class="drawer-item" href="dashboard.html"><i class="fas fa-home item-icon"></i> Home</a>
-        <a class="drawer-item" href="profile.html"><i class="fas fa-user item-icon"></i> Profile</a>
-        <a class="drawer-item" href="notification.html"><i class="fas fa-bell item-icon"></i> Notifications</a>
-        <a class="drawer-item" href="progress.html"><i class="fas fa-chart-line item-icon"></i> Progress</a>
-        <a class="drawer-item" href="notes.html"><i class="fas fa-pen-alt item-icon"></i> Notes</a>
-        <a class="drawer-item" href="quiz.html"><i class="fas fa-brain item-icon"></i> Quiz</a>
-        <a class="drawer-item" href="archive.html"><i class="fas fa-archive item-icon"></i> Archive</a>
-        <a class="drawer-item" href="settings.html"><i class="fas fa-cog item-icon"></i> Settings</a>
-        <a class="drawer-item" href="about.html"><i class="fas fa-info-circle item-icon"></i> About</a>
-      </nav>
-      <button class="drawer-logout" onclick="window.location.href='logout.html'"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-  </div>
-
-  <!-- Header -->
   <div class="header-gradient">
     <div class="top-bar">
-      <button class="menu-btn" onclick="openDrawer()"><i class="fas fa-bars"></i></button>
+      <button class="back-btn" onclick="window.location.href='dashboard.html'"><i class="fas fa-arrow-left"></i></button>
+      <div class="header-right">
+        <button class="notif-btn" onclick="window.location.href='notification.html'"><i class="fas fa-bell"></i></button>
+      </div>
     </div>
     <div class="page-title">Profile</div>
   </div>
 
   <div class="content">
-    <!-- Profile Card -->
     <div class="profile-card">
-      <div class="avatar" id="avatar">U</div>
-      <div class="user-name" id="uname">User</div>
-      <div class="user-email" id="uemail">user@email.com</div>
+      <div class="avatar-wrapper" id="avatarWrapper">
+        <div class="avatar" id="avatar">U</div>
+        <div class="avatar-edit-icon"><i class="fas fa-camera"></i></div>
+      </div>
+      <div class="user-name-row">
+        <div class="user-name" id="userNameDisplay">User</div>
+        <button class="edit-name-btn" id="editNameBtn"><i class="fas fa-pencil-alt"></i></button>
+      </div>
+      <div class="user-email" id="userEmailDisplay">user@example.com</div>
       <div class="stats-row">
         <div class="stat"><div class="stat-num" id="subjectCount">0</div><div class="stat-label">Subjects</div></div>
         <div class="stat"><div class="stat-num" id="noteCount">0</div><div class="stat-label">Notes</div></div>
@@ -190,69 +252,185 @@
       </div>
     </div>
 
-    <!-- Info Cards -->
     <div class="info-card">
-      <div class="info-label">Username</div>
-      <div class="info-value" id="infoUser">—</div>
+      <div class="info-left">
+        <div class="info-label">Password</div>
+        <div class="info-value">●●●●●●●</div>
+      </div>
+      <button class="edit-info-btn" id="editPasswordBtn"><i class="fas fa-pencil-alt"></i></button>
     </div>
+
     <div class="info-card">
-      <div class="info-label">Email</div>
-      <div class="info-value" id="infoEmail">—</div>
+      <div class="info-left">
+        <div class="info-label">Member Since</div>
+        <div class="info-value" id="memberSince">2026</div>
+      </div>
     </div>
-    <div class="info-card">
-      <div class="info-label">Member Since</div>
-      <div class="info-value" id="memberSince">2026</div>
+  </div>
+
+  <!-- Modal for editing username -->
+  <div class="modal" id="usernameModal">
+    <div class="modal-content">
+      <h3>Edit Username</h3>
+      <input type="text" id="newUsername" placeholder="New username">
+      <div class="modal-buttons">
+        <button class="modal-save" id="saveUsernameBtn">Save</button>
+        <button class="modal-cancel" id="cancelUsernameBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for changing password -->
+  <div class="modal" id="passwordModal">
+    <div class="modal-content">
+      <h3>Change Password</h3>
+      <input type="password" id="currentPassword" placeholder="Current password">
+      <input type="password" id="newPassword" placeholder="New password">
+      <input type="password" id="confirmPassword" placeholder="Confirm new password">
+      <div class="modal-buttons">
+        <button class="modal-save" id="savePasswordBtn">Save</button>
+        <button class="modal-cancel" id="cancelPasswordBtn">Cancel</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
+  // ---------- AUTH & DATA ----------
   const email = localStorage.getItem('brainory_currentUser');
   if (!email) window.location.href = 'login.html';
   const users = JSON.parse(localStorage.getItem('brainory_users') || '{}');
-  const user = users[email] || { username: email.split('@')[0], email };
+  let user = users[email] || { username: email.split('@')[0], email, password: 'default123' };
   const storageKey = 'brainory_' + email;
-  const appData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  let appData = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  if (!appData.notes) appData.notes = [];
+  if (!appData.activities) appData.activities = [];
+  if (!appData.subjects) appData.subjects = [];
 
-  // ---------- Populate profile ----------
-  const initials = (user.username || email).charAt(0).toUpperCase();
-  document.getElementById('avatar').textContent = initials;
-  document.getElementById('uname').textContent = user.username || email.split('@')[0];
-  document.getElementById('uemail').textContent = email;
-  document.getElementById('infoUser').textContent = user.username || email.split('@')[0];
-  document.getElementById('infoEmail').textContent = email;
-
-  // Stats
-  const subjectCount = (appData.subjects || []).length;
-  const noteCount = (appData.notes || []).length;
-  const sessionCount = (appData.activities || []).length;
-  document.getElementById('subjectCount').textContent = subjectCount;
-  document.getElementById('noteCount').textContent = noteCount;
-  document.getElementById('sessionCount').textContent = sessionCount;
-
-  let memberYear = "2026";
-  if (appData.activities && appData.activities.length > 0) {
-    const firstDate = appData.activities[0]?.date;
-    if (firstDate && firstDate.includes('-')) memberYear = firstDate.split('-')[0];
+  // Helper: save user changes back to localStorage
+  function saveUserToStorage() {
+    users[email] = user;
+    localStorage.setItem('brainory_users', JSON.stringify(users));
   }
-  document.getElementById('memberSince').textContent = memberYear;
 
-  // ---------- Drawer avatar ----------
-  document.getElementById('drawerAvatar').innerHTML = initials;
-  document.getElementById('drawerUsername').innerHTML = user.username || email.split('@')[0];
-  document.getElementById('drawerEmail').innerHTML = email;
+  // ---------- Populate profile UI ----------
+  function updateProfileUI() {
+    // Avatar: if user has custom avatar (base64), display it, else show initials
+    if (user.avatar) {
+      const avatarDiv = document.getElementById('avatar');
+      avatarDiv.style.background = 'none';
+      avatarDiv.style.backgroundColor = '#e2e8f0';
+      avatarDiv.innerHTML = `<img src="${user.avatar}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+    } else {
+      const initials = (user.username || email).charAt(0).toUpperCase();
+      document.getElementById('avatar').style.background = '';
+      document.getElementById('avatar').innerHTML = initials;
+    }
+    document.getElementById('userNameDisplay').textContent = user.username || email.split('@')[0];
+    document.getElementById('userEmailDisplay').textContent = email;
+    // Stats
+    const subjectsSet = new Set();
+    appData.notes.forEach(note => { if (note.subject) subjectsSet.add(note.subject); });
+    document.getElementById('subjectCount').textContent = subjectsSet.size;
+    document.getElementById('noteCount').textContent = appData.notes.length;
+    document.getElementById('sessionCount').textContent = appData.activities.length;
+    // Member since
+    let memberYear = "2026";
+    if (appData.activities && appData.activities.length > 0) {
+      const firstDate = appData.activities[0]?.date;
+      if (firstDate && firstDate.includes('-')) memberYear = firstDate.split('-')[0];
+    }
+    document.getElementById('memberSince').textContent = memberYear;
+  }
 
-  // ---------- Drawer functions ----------
-  function openDrawer() {
-    document.getElementById('drawerOverlay').classList.add('open');
-    document.getElementById('drawer').classList.add('open');
-  }
-  function closeDrawer() {
-    document.getElementById('drawerOverlay').classList.remove('open');
-    document.getElementById('drawer').classList.remove('open');
-  }
-  window.openDrawer = openDrawer;
-  window.closeDrawer = closeDrawer;
+  // ---------- Avatar upload ----------
+  const avatarWrapper = document.getElementById('avatarWrapper');
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  avatarWrapper.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target.result;
+      user.avatar = base64;
+      saveUserToStorage();
+      updateProfileUI();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ---------- Edit username modal ----------
+  const usernameModal = document.getElementById('usernameModal');
+  const editNameBtn = document.getElementById('editNameBtn');
+  const newUsernameInput = document.getElementById('newUsername');
+  const saveUsernameBtn = document.getElementById('saveUsernameBtn');
+  const cancelUsernameBtn = document.getElementById('cancelUsernameBtn');
+
+  editNameBtn.onclick = () => {
+    newUsernameInput.value = user.username || '';
+    usernameModal.classList.add('open');
+  };
+  saveUsernameBtn.onclick = () => {
+    const newName = newUsernameInput.value.trim();
+    if (newName === "") {
+      alert("Username cannot be empty.");
+      return;
+    }
+    user.username = newName;
+    saveUserToStorage();
+    updateProfileUI();
+    usernameModal.classList.remove('open');
+  };
+  cancelUsernameBtn.onclick = () => usernameModal.classList.remove('open');
+  usernameModal.addEventListener('click', (e) => { if (e.target === usernameModal) usernameModal.classList.remove('open'); });
+
+  // ---------- Change password modal ----------
+  const passwordModal = document.getElementById('passwordModal');
+  const editPasswordBtn = document.getElementById('editPasswordBtn');
+  const currentPasswordInput = document.getElementById('currentPassword');
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const savePasswordBtn = document.getElementById('savePasswordBtn');
+  const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+
+  editPasswordBtn.onclick = () => {
+    currentPasswordInput.value = '';
+    newPasswordInput.value = '';
+    confirmPasswordInput.value = '';
+    passwordModal.classList.add('open');
+  };
+  savePasswordBtn.onclick = () => {
+    const current = currentPasswordInput.value;
+    const newPwd = newPasswordInput.value;
+    const confirm = confirmPasswordInput.value;
+    if (!user.password) user.password = 'default123'; // fallback for old accounts
+    if (current !== user.password) {
+      alert("Current password is incorrect.");
+      return;
+    }
+    if (newPwd.length < 4) {
+      alert("New password must be at least 4 characters.");
+      return;
+    }
+    if (newPwd !== confirm) {
+      alert("New password and confirmation do not match.");
+      return;
+    }
+    user.password = newPwd;
+    saveUserToStorage();
+    alert("Password changed successfully!");
+    passwordModal.classList.remove('open');
+  };
+  cancelPasswordBtn.onclick = () => passwordModal.classList.remove('open');
+  passwordModal.addEventListener('click', (e) => { if (e.target === passwordModal) passwordModal.classList.remove('open'); });
+
+  // ---------- Additional: Remove drawer and bottom nav (not needed) ----------
+  // No drawer code, no bottom nav.
+
+  updateProfileUI();
 </script>
 </body>
 </html>
